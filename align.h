@@ -1,7 +1,7 @@
 /******************************************************************************\
 align.h
 
-Copyright (C) 2003-2006 Ian Korf
+Copyright (C) Ian Korf
 
 \******************************************************************************/
 
@@ -26,5 +26,6 @@ double sw_mmg (const char*, const char*, int, int, int);
 double sw_mmg_linear (const char*, const char*, int, int, int);
 double sw_mat (const char*, const char*, int);
 double sw_mat_linear (const char*, const char*, int);
+int edit_distance(const char*, const char*, int);
 
 #endif

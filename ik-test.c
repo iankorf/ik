@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include "toolbox.h"
 #include "sequence.h"
 #include "align.h"
@@ -17,6 +18,7 @@ void test_memory (void);
 void test_dna (void);
 void test_stuff (void);
 void test_sw (void);
+void test_ed (void);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
@@ -36,6 +38,7 @@ options:\n\
   -memory <float> [none, use gigabytes]\n\
   -stuff\n\
   -sw\n\
+  -ed\n\
 ";
 
 int main (int argc, char ** argv) {
@@ -63,11 +66,13 @@ int main (int argc, char ** argv) {
 	ik_register_option("-memory", 1);
 	ik_register_option("-stuff", 0);
 	ik_register_option("-sw", 0);
+	ik_register_option("-ed", 0);
 	ik_parse_options(&argc, argv);
 	
 	/* control */
 	if (ik_option("-stuff")) test_stuff();
 	if (ik_option("-sw")) test_sw();
+	if (ik_option("-ed")) test_ed();
 	if (ik_option("-iterate")) ITERATIONS = atoi(ik_option("-iterate"));
 	if (ik_option("-ivec")) test_ivec();
 	if (ik_option("-fvec")) test_fvec();
@@ -326,5 +331,11 @@ void test_sw (void) {
 	}
 }
 
-
+void test_ed(void) {
+	int d;
+	char *s1 = "ACGT";
+	char *s2 = "AAAA";
+	d = edit_distance(s1, s2, 4);
+	assert(d == 3);
+}
 
