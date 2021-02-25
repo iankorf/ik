@@ -3,6 +3,7 @@
 ########################
 
 LIB = -lm
+CFLAGS = -O2 -Wall -Werror
 
 OBJECTS = \
 	sequence.o\
@@ -28,7 +29,7 @@ $(ARC): $(OBJECTS)
 	ar rvs $(ARC) $(OBJECTS)
 
 $(APP1): $(OBJ1) $(OBJECTS)
-	$(CC) -o $(APP1) $(CFLAGS) $(OBJ1) $(OBJECTS) $(LIB)
+	$(CC) -o $(APP1) $(OBJ1) $(OBJECTS) $(LIB)
 
 clean:
 	rm -f *.o $(APP1) $(APP2) $(ARC)
@@ -46,7 +47,7 @@ test: $(APP1)
 
 gcc:
 	make $(ARC)
-	make $(APP1) CC="gcc" CFLAGS="-O2 -Wall -Werror"
+	make $(APP1)
 
 ###################
 # Inference Rules #
