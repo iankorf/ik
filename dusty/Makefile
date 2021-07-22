@@ -1,7 +1,8 @@
 # Makefile for dusty
 
 LIB = -lm -lik
-INC = -L.. -I..
+LINC = -L..
+INC = -I..
 CFLAGS = -O2 -Wall -Werror
 OBJECTS = 
 
@@ -12,7 +13,7 @@ default:
 	make $(APP)
 
 $(APP): $(OBJ) $(OBJECTS)
-	$(CC) -o $(APP) $(OBJ) $(OBJECTS) $(INC) $(LIB)
+	$(CC) -o $(APP) $(OBJ) $(OBJECTS) $(LINC) $(LIB)
 
 clean:
 	rm -f *.o $(APP)
