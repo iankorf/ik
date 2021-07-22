@@ -139,29 +139,6 @@ void    ik_tmap_set (ik_tmap, const char *, const char *);
 char *  ik_tmap_get (ik_tmap, const char *);
 ik_tvec ik_tmap_keys (const ik_tmap);
 
-/* generic suffix tree */
-struct ik_xnode {
-	ik_vec children;
-	void  * data;
-	char	c;
-};
-typedef struct ik_xnode * ik_xnode; /* note: all methods private */
-ik_xnode ik_xnode_new (char);
-ik_xnode ik_xnode_search (const ik_xnode, char c);
-
-struct ik_xtree {
-	ik_xnode head;
-	ik_vec	 alloc;
-};
-typedef struct ik_xtree * ik_xtree;
-void     ik_xtree_free (ik_xtree);
-ik_xtree ik_xtree_new (void);
-void *   ik_xtree_get (const ik_xtree, const char *);
-int      ik_xtree_check (const ik_xtree, const char *);
-ik_xnode ik_xtree_node (const ik_xtree, const char *);
-void     ik_xtree_set (ik_xtree, const char *, void *);
-ik_tvec	 ik_xtree_keys (const ik_xtree);
-
 /* command line processing */
 void   ik_register_option (const char *, int);
 void   ik_parse_options (int *, char **);

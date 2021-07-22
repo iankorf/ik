@@ -37,7 +37,7 @@ ik_fasta ik_fasta_new (const char * def, const char * seq) {
 
 ik_fasta ik_fasta_read (FILE * stream) {
 	char	 c;
-	int		 i;
+	int      i;
 	size_t	 size;
 	char   * seq;
 	char   * def;

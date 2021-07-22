@@ -2,7 +2,6 @@
 #include <assert.h>
 #include "toolbox.h"
 #include "sequence.h"
-#include "align.h"
 
 static int ITERATIONS = 1000;
 void test_ivec (void);
@@ -13,12 +12,9 @@ void test_imap (void);
 void test_fmap (void);
 void test_tmap (void);
 void test_map (void);
-void test_xtree (void);
 void test_memory (void);
 void test_dna (void);
 void test_stuff (void);
-void test_sw (void);
-void test_ed (void);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
@@ -32,12 +28,10 @@ options:\n\
   -fmap\n\
   -tmap\n\
   -map\n\
-  -xtree\n\
   -dna\n\
   -iterate <int> [1000]\n\
   -memory <float> [none, use gigabytes]\n\
   -stuff\n\
-  -sw\n\
   -ed\n\
 ";
 
@@ -60,19 +54,14 @@ int main (int argc, char ** argv) {
 	ik_register_option("-fmap", 0);
 	ik_register_option("-tmap", 0);
 	ik_register_option("-map", 0);
-	ik_register_option("-xtree", 0);
 	ik_register_option("-dna", 0);
 	ik_register_option("-all", 0);
 	ik_register_option("-memory", 1);
 	ik_register_option("-stuff", 0);
-	ik_register_option("-sw", 0);
-	ik_register_option("-ed", 0);
 	ik_parse_options(&argc, argv);
 	
 	/* control */
 	if (ik_option("-stuff")) test_stuff();
-	if (ik_option("-sw")) test_sw();
-	if (ik_option("-ed")) test_ed();
 	if (ik_option("-iterate")) ITERATIONS = atoi(ik_option("-iterate"));
 	if (ik_option("-ivec")) test_ivec();
 	if (ik_option("-fvec")) test_fvec();
@@ -82,7 +71,6 @@ int main (int argc, char ** argv) {
 	if (ik_option("-fmap")) test_fmap();
 	if (ik_option("-tmap")) test_tmap();
 	if (ik_option("-map"))	test_map();
-	if (ik_option("-xtree")) test_xtree();
 	if (ik_option("-dna")) test_dna();
 	if (ik_option("-all")) {
 		test_ivec();
@@ -91,7 +79,6 @@ int main (int argc, char ** argv) {
 		test_imap();
 		test_fmap();
 		test_tmap();
-		test_xtree();
 		test_dna();
 	}
 	if (ik_option("-memory")) test_memory();
@@ -123,6 +110,7 @@ void test_dna (void) {
 	ik_dna dna;
 	ik_dna anti;
 	
+	printf("DNA\n");
 	for (i = 0; i < ITERATIONS; i++) {
 		for (j = 0; j < 1000; j++) {
 			dna = ik_dna_new(">def", "AAAAACCCCCGGGGGTTTTTAAAAACCCCCGGGGGTTTTT");
@@ -280,62 +268,3 @@ void test_map (void) {
 		ik_map_free(map);
 	}
 }
-
-void test_xtree (void) {
-	int i, j;
-	ik_xtree xtree;
-	char text[64];
-	
-	printf("xtree\n");
-	for (i = 0; i < ITERATIONS; i++) {
-		xtree = ik_xtree_new();
-		for (j = 0; j < 100; j++) {
-			sprintf(text, "key %d", j);
-			ik_xtree_set(xtree, text, text);
-		}
-		ik_xtree_free(xtree);
-	}
-}
-
-void test_sw (void) {
-	int i, j;
-	char s1[10000], s2[10000];
-	int limit = 1000;
-	int r;
-	double d1, d2;
-	
-	for (i = 0; i < 1000; i++) {
-		for (j = 0; j < limit; j++) {
-			r = 4 * (double)rand()/RAND_MAX;
-			switch(r) {
-				case 0: s1[j] = 'A'; break;
-				case 1: s1[j] = 'C'; break;
-				case 2: s1[j] = 'G'; break;
-				case 3: s1[j] = 'T'; break;
-			}
-		}
-		for (j = 0; j < limit; j++) {
-			r = 4 * (double)rand()/RAND_MAX;
-			switch(r) {
-				case 0: s2[j] = 'A'; break;
-				case 1: s2[j] = 'C'; break;
-				case 2: s2[j] = 'G'; break;
-				case 3: s2[j] = 'T'; break;
-			}
-		}
-		s1[limit] = '\0';
-		s2[limit] = '\0';
-		d1 = sw_mat_linear(s1, s2, 0);
-		d2 = sw_mat(s1, s2, 0);
-		if (d1 != d2) ik_exit(1, "fail");
-	}
-}
-
-void test_ed(void) {
-	int d;
-	char *s1 = "ACGT";
-	char *s2 = "AAAA";
-	d = edit_distance(s1, s2, 4);
-	assert(d == 3);
-}
-

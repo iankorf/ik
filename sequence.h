@@ -10,7 +10,7 @@ sequence.h
 #include "toolbox.h"
 
 struct ik_fasta {
-	int	   length;
+	int    length;
 	char * def;
 	char * seq;
 };
@@ -23,7 +23,7 @@ void	 ik_fasta_write (FILE *, const ik_fasta);
 void	 ik_fasta_set_line_length (int);
 
 struct ik_dna {
-	int	   length;
+	int    length;
 	char * def;
 	char * seq;
 	char * num;
@@ -31,7 +31,7 @@ struct ik_dna {
 typedef struct ik_dna * ik_dna;
 
 struct ik_pro {
-	int	   length;
+	int    length;
 	char * def;
 	char * seq;
 	char * num;

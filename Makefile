@@ -8,7 +8,6 @@ CFLAGS = -O2 -Wall -Werror
 OBJECTS = \
 	sequence.o\
 	toolbox.o\
-	align.o\
 
 ARC = libik.a
 
