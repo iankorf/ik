@@ -542,8 +542,8 @@ void ik_pipe_close (ik_pipe pipe) {
 }
 
 ik_pipe ik_pipe_open (const char * name, const char * mode) {
-	char	 command[1024];
-	int		 length = strlen(name);
+	char	command[1024];
+	int     length = strlen(name);
 	ik_pipe pipe = ik_malloc(sizeof(struct ik_pipe));
 	
 	if		(strcmp(mode, "r") == 0)  pipe->mode = 0;
