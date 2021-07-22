@@ -12,7 +12,7 @@ options:\n\
   -n          use Ns for masking (default lowercase)\n\
   -a <int>    algorithm [1]";
 
-double entropy(int a, int c, int g, int t) {
+static double entropy(int a, int c, int g, int t) {
 	int total = a + c + g + t;
 	double h = 0;
 	double pa, pc, pg, pt;
@@ -32,7 +32,7 @@ double entropy(int a, int c, int g, int t) {
 	return h/log(2);
 }
 
-char *dust1(const ik_fasta ff, int w, int t, int lc) {
+static char *dust1(const ik_fasta ff, int w, int t, int lc) {
 	int A, C, G, T;
 	int pos;
 	double h = 0;
@@ -40,10 +40,7 @@ char *dust1(const ik_fasta ff, int w, int t, int lc) {
 	strcpy(mask, ff->seq);
 	for (int i = 0; i < ff->length; i++) mask[i] = toupper(mask[i]);
 	for (int i = 0; i < ff->length -w + 1; i++) {
-		A = 0;
-		C = 0;
-		G = 0;
-		T = 0;
+		A = 0; C = 0; G = 0; T = 0;
 		for (int j = 0; j < w; j++) {
 			switch (mask[i+j]) {
 				case 'A': A++; break;
@@ -62,7 +59,7 @@ char *dust1(const ik_fasta ff, int w, int t, int lc) {
 	return mask;
 }
 
-char *dust2(const ik_fasta ff, int w, int t, int lc) {
+static char *dust2(const ik_fasta ff, int w, int t, int lc) {
 	char *mask = malloc(ff->length +1);
 	strcpy(mask, ff->seq);
 	return mask;
