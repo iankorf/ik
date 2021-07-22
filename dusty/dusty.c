@@ -53,17 +53,70 @@ static char *dust1(const ik_fasta ff, int w, int t, int lc) {
 		if (h < t) {
 			pos = i + w/2;
 			if (lc) mask[pos] = tolower(mask[pos]);
-			else mask[pos] = 'N';
+			else    mask[pos] = 'N';
 		}
 	}
 	return mask;
 }
 
+
 static char *dust2(const ik_fasta ff, int w, int t, int lc) {
-	char *mask = malloc(ff->length +1);
+	int A, C, G, T;
+	int pos;
+	double h;
+	char *mask = malloc(ff->length+1);
 	strcpy(mask, ff->seq);
+	for (int i = 0; i < ff->length; i++) mask[i] = toupper(mask[i]);
+	
+	
+	// first window
+	A = 0; C = 0; G = 0; T = 0;
+	for (int i = 0; i < w; i++) {
+		switch (mask[i]) {
+			case 'A': A++; break;
+			case 'C': C++; break;
+			case 'G': G++; break;
+			case 'T': T++; break;
+		}
+	}
+	
+	h = entropy(A, C, G, T);
+	if (h < t) {
+		pos = w/2;
+		if (lc) mask[pos] = tolower(mask[pos]);
+		else    mask[pos] = 'N';
+	}
+
+	// remaining windows
+	for (int i = 1; i < ff->length -w + 1; i++) {
+		char on  = mask[i+w-1];
+		char off = mask[i-1];
+		
+		switch (on) {
+			case 'A': A++; break;
+			case 'C': C++; break;
+			case 'G': G++; break;
+			case 'T': T++; break;
+		}
+		
+		switch (off) {
+			case 'A': A--; break;
+			case 'C': C--; break;
+			case 'G': G--; break;
+			case 'T': T--; break;
+		}
+
+		h = entropy(A, C, G, T);
+		if (h < t) {
+			pos = i + w/2;
+			if (lc) mask[pos] = tolower(mask[pos]);
+			else    mask[pos] = 'N';
+		}
+	}
+	
 	return mask;
 }
+
 
 int main(int argc, char **argv) {
 	char *file = NULL; // path to fasta file
