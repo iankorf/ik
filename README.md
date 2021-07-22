@@ -1,2 +1,4 @@
-# ik
-Some sequence analysis stuff in C
+ik
+==
+
+Toolbox for building simple sequence analysis programs.
