@@ -117,7 +117,7 @@ ik_tvec ik_imap_keys (const ik_imap);
 
 /* float map */
 struct ik_fmap {
-	ik_map hash;
+	ik_map  hash;
 	ik_fvec fvec;
 };
 typedef struct ik_fmap * ik_fmap;
@@ -129,7 +129,7 @@ ik_tvec ik_fmap_keys (const ik_fmap);
 
 /* text map */
 struct ik_tmap {
-	ik_map hash;
+	ik_map  hash;
 	ik_tvec tvec;
 };
 typedef struct ik_tmap * ik_tmap;
@@ -146,9 +146,9 @@ char * ik_option(const char *);
 
 /* pipe */
 struct ik_pipe {
-	int	   mode; /* 0 = read, 1 = write, 2 = r+ */
+	int    mode; /* 0 = read, 1 = write, 2 = r+ */
 	char * name;
-	int	   gzip;
+	int    gzip;
 	FILE * stream;
 };
 typedef struct ik_pipe * ik_pipe;
