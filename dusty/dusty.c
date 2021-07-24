@@ -157,6 +157,7 @@ int main(int argc, char **argv) {
 		out = ik_fasta_new(in->def, mask);
 		ik_fasta_write(stdout, out);
 		
+		ik_free(mask);
 		ik_fasta_free(in);
 		ik_fasta_free(out);
 	}
