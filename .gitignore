@@ -1,6 +1,10 @@
+# Mac
+.DS_Store
+
 # Binaries
 ik-test
-edist
+dusty
+sw
 
 # Prerequisites
 *.d
