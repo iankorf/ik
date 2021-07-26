@@ -2,6 +2,9 @@
  align.c
 \******************************************************************************/
 
+#ifndef IK_ALIGN_C
+#define IK_ALIGN_C
+
 #include "align.h"
 
 static int NT[25][25] = {
@@ -409,4 +412,4 @@ int sw_mat_linear (const char *s1, const char *s2, int blosum) {
 	return max_s;
 }
 
-
+#endif
