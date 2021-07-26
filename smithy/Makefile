@@ -1,4 +1,4 @@
-# Makefile for sw
+# Makefile for smithy
 
 LIB = -lm -lik
 LINC = -L..
@@ -6,8 +6,8 @@ INC = -I..
 CFLAGS = -O2 -Wall -Werror
 OBJECTS = align.o
 
-APP = sw
-OBJ = sw.o
+APP = smithy
+OBJ = smithy.o
 
 default:
 	make $(APP)
