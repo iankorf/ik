@@ -1,8 +1,6 @@
 /******************************************************************************\
-toolbox.h
-
-Copyright (C) Ian Korf
-
+ toolbox.h
+ Copyright (C) Ian Korf
 \******************************************************************************/
 
 #ifndef IK_TOOLBOX_H
@@ -17,27 +15,27 @@ Copyright (C) Ian Korf
 #include <stdlib.h>
 #include <string.h>
 
-/* numeric constats */
+// numeric constants
 extern const int ik_POWER[6][8];
 extern const float MIN_SCORE;
 extern const float MAX_SCORE;
 
-/* library and program info */
+// library and program info
 char * ik_get_version_number(void);
 void   ik_set_program_name(const char *);
 char * ik_get_program_name(void);
 
-/* specialized output */
+// specialized output
 void ik_exit(int, const char *, ...);
 void ik_output(FILE *, int, ...);
 
-/* memory */
+// memory
 void * ik_malloc(size_t);
 void * ik_calloc(size_t, size_t);
 void * ik_realloc(void *, size_t);
 void   ik_free(void *);
 
-/* integer vector */
+// integer vector
 struct ik_IVEC {
 	int * elem;
 	int   size;
@@ -49,7 +47,7 @@ void	ik_ivec_free(ik_ivec);
 ik_ivec ik_ivec_new(void);
 void	ik_ivec_push(ik_ivec, int);
 
-/* float vector */
+// float vector
 struct ik_FVEC {
 	float * elem;
 	int     size;
@@ -61,7 +59,7 @@ void	ik_fvec_free(ik_fvec);
 ik_fvec ik_fvec_new(void);
 void	ik_fvec_push(ik_fvec, float);
 
-/* text vector */
+// text vector
 struct ik_TVEC {
 	char ** elem;
 	int     size;
@@ -73,7 +71,7 @@ void	ik_tvec_free(ik_tvec);
 ik_tvec ik_tvec_new(void);
 void	ik_tvec_push(ik_tvec, const char *);
 
-/* generic void * vector */
+// generic void * vector
 struct ik_VEC {
 	void ** elem;
 	int     size;
@@ -85,7 +83,7 @@ void   ik_vec_free(ik_vec);
 ik_vec ik_vec_new(void);
 void   ik_vec_push(ik_vec, void *);
 
-/* generic map (text key, void * value) */
+// generic map (text key, void * value)
 struct ik_MAP {
 	int      level;
 	int      slots;
@@ -103,7 +101,7 @@ ik_tvec ik_map_keys(const ik_map);
 ik_vec	ik_map_vals(const ik_map);
 void	ik_map_stat(const ik_map);
 
-/* integer map */
+// integer map
 struct ik_IMAP {
 	ik_map	hash;
 	ik_ivec ivec;
@@ -115,7 +113,7 @@ void	ik_imap_set(ik_imap, const char *, int);
 int     qik_imap_get(const ik_imap, const char *);
 ik_tvec ik_imap_keys(const ik_imap);
 
-/* float map */
+// float map
 struct ik_FMAP {
 	ik_map  hash;
 	ik_fvec fvec;
@@ -127,7 +125,7 @@ void    ik_fmap_set(ik_fmap, const char *, float);
 float   ik_fmap_get(ik_fmap, const char *);
 ik_tvec ik_fmap_keys(const ik_fmap);
 
-/* text map */
+// text map
 struct ik_TMAP {
 	ik_map  hash;
 	ik_tvec tvec;
@@ -139,14 +137,14 @@ void    ik_tmap_set(ik_tmap, const char *, const char *);
 char *  ik_tmap_get(ik_tmap, const char *);
 ik_tvec ik_tmap_keys(const ik_tmap);
 
-/* command line processing */
+// command line processing
 void   ik_register_option(const char *, int);
 void   ik_parse_options(int *, char **);
 char * ik_option(const char *);
 
-/* pipe */
+// pipe
 struct ik_PIPE {
-	int    mode; /* 0 = read, 1 = write, 2 = r+ */
+	int    mode; // 0 = read, 1 = write, 2 = r+
 	char * name;
 	int    gzip;
 	FILE * stream;
