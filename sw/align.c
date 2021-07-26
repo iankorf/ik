@@ -144,12 +144,29 @@ void set_matrix (int N) {
 	
 }
 
-double sw_mmg (const char *s1, const char *s2, int m, int n, int g) {
+void ik_hsp_free (ik_hsp hsp) {
+	ik_free(hsp->a1);
+	ik_free(hsp->a2);
+	ik_free(hsp->a3);
+}
+
+ik_hsp ik_hsp_new (void) {
+	ik_hsp hsp = ik_malloc(sizeof(struct ik_HSP));
+	hsp->length = 0;
+	hsp->score = 0;
+	hsp->a1 = NULL;
+	hsp->a2 = NULL;
+	hsp->a3 = NULL;
+	return hsp;
+}
+
+ik_hsp sw_mmg(const char *s1, const char *s2, int m, int n, int g) {
 	int i, j, l1, l2, max_i, max_j, min_i, min_j, pos;
 	double d, v, h, max_s = 0;
 	double ** sm;
 	char ** tm;
 	char *a1, *a2, *a3;
+	ik_hsp hsp;
 	
 	l1 = strlen(s1), l2 = strlen(s2);
 	
@@ -214,10 +231,17 @@ double sw_mmg (const char *s1, const char *s2, int m, int n, int g) {
 	free(sm);
 	free(tm);
 	
-	return max_s;
+	// return
+	hsp = ik_hsp_new();
+	hsp->score = max_s;
+	hsp->length = strlen(a1);
+	hsp->a1 = a1;
+	hsp->a2 = a2;
+	hsp->a3 = a3;
+	return hsp;
 }
 
-double sw_mmg_linear (const char *s1, const char *s2, int m, int n, int g) {
+int sw_mmg_linear (const char *s1, const char *s2, int m, int n, int g) {
 	int i, j, k, l1, l2, max_i, max_j;
 	double d, v, h, max_s = 0;
 	double *r1, *r2;
@@ -258,13 +282,14 @@ double sw_mmg_linear (const char *s1, const char *s2, int m, int n, int g) {
 	return max_s;
 }
 
-double sw_mat (const char *s1, const char *s2, int blosum) {
+ik_hsp sw_mat (const char *s1, const char *s2, int blosum) {
 	int i, j, l1, l2, max_i, max_j, min_i, min_j, pos;
 	double d, v, h, max_s = 0;
 	double ** sm;
 	char ** tm;
 	char *a1, *a2, *a3;
 	int a, b;
+	ik_hsp hsp;
 	
 	l1 = strlen(s1), l2 = strlen(s2);
 	set_matrix(blosum);
@@ -331,10 +356,17 @@ double sw_mat (const char *s1, const char *s2, int blosum) {
 	free(sm);
 	free(tm);
 	
-	return max_s;
+	// return
+	hsp = ik_hsp_new();
+	hsp->score = max_s;
+	hsp->length = strlen(a1);
+	hsp->a1 = a1;
+	hsp->a2 = a2;
+	hsp->a3 = a3;
+	return hsp;
 }
 
-double sw_mat_linear (const char *s1, const char *s2, int blosum) {
+int sw_mat_linear (const char *s1, const char *s2, int blosum) {
 	int i, j, k, l1, l2, max_i, max_j, a, b;
 	double d, v, h, max_s = 0;
 	double *r1, *r2;

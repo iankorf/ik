@@ -16,13 +16,21 @@
 
 #include "toolbox.h"
 
-// needs an alignment struct
+void set_matrix (int);
 
-
-void   set_matrix (int);
-double sw_mmg (const char*, const char*, int, int, int);
-double sw_mmg_linear (const char*, const char*, int, int, int);
-double sw_mat (const char*, const char*, int);
-double sw_mat_linear (const char*, const char*, int);
+struct ik_HSP {
+	int    length;
+	int    score;
+	char * a1;
+	char * a2;
+	char * a3;
+};
+typedef struct ik_HSP * ik_hsp;
+void ik_hsp_free (ik_hsp);
+ik_hsp ik_hsp_new (void);
+ik_hsp ik_sw_mmg (const char*, const char*, int, int, int);
+ik_hsp ik_sw_mmglm (const char*, const char*, int, int, int);
+ik_hsp ik_sw_mat (const char*, const char*, int);
+ik_hsp ik_sw_matlm (const char*, const char*, int);
 
 #endif
