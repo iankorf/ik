@@ -3,6 +3,8 @@
 
 # Binaries
 ik-test
+dusty/dusty
+sw/sw
 
 # Prerequisites
 *.d
