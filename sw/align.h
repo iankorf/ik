@@ -29,8 +29,8 @@ typedef struct ik_HSP * ik_hsp;
 void ik_hsp_free (ik_hsp);
 ik_hsp ik_hsp_new (void);
 ik_hsp ik_sw_mmg (const char*, const char*, int, int, int);
-ik_hsp ik_sw_mmglm (const char*, const char*, int, int, int);
+int    ik_sw_mmglm (const char*, const char*, int, int, int);
 ik_hsp ik_sw_mat (const char*, const char*, int);
-ik_hsp ik_sw_matlm (const char*, const char*, int);
+int    ik_sw_matlm (const char*, const char*, int);
 
 #endif
