@@ -18,7 +18,7 @@ const int ik_POWER[6][8] = {
 	{1, 5, 25, 125, 625, 3125, 15625, 78125},
 };
 
-static char ik_version_number[] = "2004-01-12";
+static char ik_version_number[] = "2021";
 static char ik_program_name[1024] = "name not set";
 
 char * ik_get_version_number (void) {return ik_version_number;}
@@ -185,15 +185,15 @@ void ik_vec_push(ik_vec vec, void *p) {
 	vec->size++;
 }
 
-/* hashing materials */
+// hashing materials
 static double HASH_MULTIPLIER[7] = {
-	3.1415926536, /* PI */
-	2.7182818285, /* e */
-	1.6180339887, /* golden mean */
-	1.7320508076, /* square root of 3 */
-	2.2360679775, /* square root of 5 */
-	2.6457513111, /* square root of 7 */
-	3.3166247904  /* square root of 11 */
+	3.1415926536, // PI
+	2.7182818285, // e
+	1.6180339887, // golden mean
+	1.7320508076, // square root of 3
+	2.2360679775, // square root of 5
+	2.6457513111, // square root of 7
+	3.3166247904  // square root of 11
 };
 static float MAX_HASH_DEPTH = 2.0;
 static int HashLevelToSlots(int level) {return pow(4, level);}
@@ -215,7 +215,7 @@ static void ExpandHash(ik_map hash) {
 	ik_vec	vvec;
 	ik_tvec	keys;
 	
-	/* create the new hash */
+	// create the new hash
 	hash->level = hash->level +1;
 	hash->slots = HashLevelToSlots(hash->level);
 	hash->key	= ik_malloc(hash->slots * sizeof(struct ik_VEC));
@@ -225,13 +225,13 @@ static void ExpandHash(ik_map hash) {
 		hash->val[i] = ik_vec_new();
 	}
 	
-	/* brand new hash? */
+	// brand new hash?
 	if (hash->keys->size == 0) return;
 	
 	keys = hash->keys;
 	hash->keys = ik_tvec_new();
 	
-	/* transfer old stuff to new hash */
+	// transfer old stuff to new hash
 	for (i = 0; i < oldslots; i++) {
 		kvec = oldkey[i];
 		vvec = oldval[i];
@@ -242,7 +242,7 @@ static void ExpandHash(ik_map hash) {
 		}
 	}
 			
-	/* free old stuff */
+	// free old stuff
 	for (i = 0; i < oldslots; i++) {
 		kvec = oldkey[i];
 		vvec = oldval[i];
@@ -285,15 +285,17 @@ ik_map ik_map_new(void) {
 void * ik_map_get(const ik_map hash, const char *key) {
 	int	  i, index;
 	char *string = NULL;
+	
 	index = HashFunc(hash, key);
-	/* resolve collisions */
+	
+	// resolve collisions
 	for (i = 0; i < hash->key[index]->size; i++) {
 		string = hash->key[index]->elem[i];
 		if (strcmp(key, string) == 0) {
 			return hash->val[index]->elem[i];
 		}
 	}
-	return NULL; /* return is NULL if not found */
+	return NULL; // return is NULL if not found
 }
 
 void ik_map_set(ik_map hash, const char *key, void *val) {
@@ -303,7 +305,7 @@ void ik_map_set(ik_map hash, const char *key, void *val) {
 		
 	index = HashFunc(hash, key);
 	
-	/* reassign unless new key */
+	// reassign unless new key
 	for (i = 0; i < hash->key[index]->size; i++) {
 		string = hash->key[index]->elem[i];
 		if (strcmp(key, string) == 0) {
@@ -320,7 +322,7 @@ void ik_map_set(ik_map hash, const char *key, void *val) {
 		ik_vec_push(hash->val[index], hash->vals->last);
 	}
 	
-	/* check if we have to expand the hash */
+	// check if we have to expand the hash
 	if ((float)hash->keys->size / (float)hash->slots >= MAX_HASH_DEPTH) {
 		ExpandHash(hash);
 	}
@@ -356,7 +358,7 @@ void ik_map_stat(const ik_map hash) {
 		 (float)total / (float)hash->slots);
 }
 
-/* int map */
+// int map
 
 void ik_imap_free(ik_imap imap) {
 	ik_map_free(imap->hash);
@@ -383,7 +385,7 @@ int ik_imap_get(ik_imap imap, const char *key) {
 	else          return *ref;
 }
 
-/* float map */
+// float map
 
 void ik_fmap_free(ik_fmap fmap) {
 	ik_map_free(fmap->hash);
@@ -411,7 +413,7 @@ float ik_fmap_get(ik_fmap fmap, const char *key) {
 }
 
 
-/* text map */
+// text map
 
 void ik_tmap_free(ik_tmap t) {
 	ik_map_free(t->hash);
@@ -434,8 +436,8 @@ void ik_tmap_set(ik_tmap t, const char *key, const char *val) {
 char * ik_tmap_get(ik_tmap t, const char *key) {
 	return (char *)ik_map_get(t->hash, key);
 }
-	
-/* command line options */
+
+// command line options
 
 static ik_tvec COMMAND_LINE = NULL;
 static ik_map CL_REGISTER	= NULL;
@@ -491,7 +493,7 @@ char * ik_option(const char *tag) {
 	return ik_map_get(CL_OPTIONS, tag);
 }
 
-/* pipe */
+// pipe
 
 void ik_pipe_close(ik_pipe pipe) {
 	pipe->mode = 0;
@@ -518,11 +520,11 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 	
 	if (name[length -3] == '.' &&
 		name[length -2] == 'g' &&
-		name[length -1] == 'z') pipe->gzip = 1; /* .gz */
+		name[length -1] == 'z') pipe->gzip = 1; // .gz
 	if (name[length -2] == '.' &&
-		name[length -1] == 'z') pipe->gzip = 1; /* .z */
+		name[length -1] == 'z') pipe->gzip = 1; // .z
 	if (name[length -2] == '.' &&
-		name[length -1] == 'Z') pipe->gzip = 1; /* .Z */
+		name[length -1] == 'Z') pipe->gzip = 1; // .Z
 	
 	if (pipe->gzip) {
 		if (pipe->mode != 0) ik_exit(1, "compressed pipes are read only");

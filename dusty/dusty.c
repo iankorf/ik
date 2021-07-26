@@ -1,3 +1,7 @@
+/*****************************************************************************\
+ dusty.c
+\*****************************************************************************/
+
 #include <stdio.h>
 
 #include "toolbox.h"
@@ -59,7 +63,6 @@ static char *dust1(const ik_fasta ff, int w, int t, int lc) {
 	return mask;
 }
 
-
 static char *dust2(const ik_fasta ff, int w, int t, int lc) {
 	int A, C, G, T;
 	int pos;
@@ -116,7 +119,6 @@ static char *dust2(const ik_fasta ff, int w, int t, int lc) {
 	
 	return mask;
 }
-
 
 int main(int argc, char **argv) {
 	char *file = NULL; // path to fasta file

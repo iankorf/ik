@@ -12,9 +12,6 @@ void test_imap (void);
 void test_fmap (void);
 void test_tmap (void);
 void test_map (void);
-void test_memory (void);
-void test_dna (void);
-void test_stuff (void);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
@@ -28,11 +25,7 @@ options:\n\
   -fmap\n\
   -tmap\n\
   -map\n\
-  -dna\n\
   -iterate <int> [1000]\n\
-  -memory <float> [none, use gigabytes]\n\
-  -stuff\n\
-  -ed\n\
 ";
 
 int main (int argc, char ** argv) {
@@ -54,14 +47,10 @@ int main (int argc, char ** argv) {
 	ik_register_option("-fmap", 0);
 	ik_register_option("-tmap", 0);
 	ik_register_option("-map", 0);
-	ik_register_option("-dna", 0);
 	ik_register_option("-all", 0);
-	ik_register_option("-memory", 1);
-	ik_register_option("-stuff", 0);
 	ik_parse_options(&argc, argv);
 	
 	/* control */
-	if (ik_option("-stuff")) test_stuff();
 	if (ik_option("-iterate")) ITERATIONS = atoi(ik_option("-iterate"));
 	if (ik_option("-ivec")) test_ivec();
 	if (ik_option("-fvec")) test_fvec();
@@ -71,7 +60,6 @@ int main (int argc, char ** argv) {
 	if (ik_option("-fmap")) test_fmap();
 	if (ik_option("-tmap")) test_tmap();
 	if (ik_option("-map"))	test_map();
-	if (ik_option("-dna")) test_dna();
 	if (ik_option("-all")) {
 		test_ivec();
 		test_fvec();
@@ -79,71 +67,13 @@ int main (int argc, char ** argv) {
 		test_imap();
 		test_fmap();
 		test_tmap();
-		test_dna();
+		test_map();
 	}
-	if (ik_option("-memory")) test_memory();
 
 	return 0;
 }
 
 #define ILIMIT 10000
-
-void test_stuff (void) {
-	int array[ILIMIT][ILIMIT];
-	int i, j, k;
-	int max = 0;
-	
-	printf("test begin...");
-	for (k = 0; k < 100; k++) {
-		fprintf(stderr, "  %d\r", k);
-		for (i = 0; i < ILIMIT; i++) {
-			for (j = 0; j < ILIMIT; j++) {
-				if (array[i][j] > max) max = array[i][j];
-			}
-		}
-	}
-	printf("done\n");
-}
-
-void test_dna (void) {
-	int    i, j;
-	ik_dna dna;
-	ik_dna anti;
-	
-	printf("DNA\n");
-	for (i = 0; i < ITERATIONS; i++) {
-		for (j = 0; j < 1000; j++) {
-			dna = ik_dna_new(">def", "AAAAACCCCCGGGGGTTTTTAAAAACCCCCGGGGGTTTTT");
-			anti = ik_dna_anti(">anti", dna);
-			ik_dna_free(dna);
-			ik_dna_free(anti);
-		}
-	}
-}
-
-void test_memory (void) {
-	float gb = atof(ik_option("-memory"));
-	float b = gb * 1024 * 1024 * 1024;
-	size_t max, i, test;
-	char * mem;
-	
-	max = b;
-	
-	fprintf(stderr, "checking %ld bytes\n", max);
-	mem = ik_malloc(b);
-	fprintf(stderr, "memory allocated\n");
-	for (test = 0; test < 256; test += 127) {
-		fprintf(stderr, "test %d\n", (char)test);
-		for (i = 0; i < max; i++) mem[i] = (char)test;
-		for (i = 0; i < max; i++) {
-			if (mem[i] != test) {
-				fprintf(stderr, "memory check failed\n");
-				fprintf(stderr, "%d != %d at %ld\n", mem[i], (char)test, i);
-				exit(1);
-			}
-		}
-	}
-}
 
 void test_ivec (void) {
 	int i, j;
