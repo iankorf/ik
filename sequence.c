@@ -11,22 +11,14 @@ Copyright (C) Ian Korf
 #include "sequence.h"
 
 
-void ik_fasta_free (ik_fasta ff) {
-	if (ff == NULL) return;
-	if (ff->def) {
-		ik_free(ff->def);
-		ff->def = NULL;
-	}
-	if (ff->seq) {
-		ik_free(ff->seq);
-		ff->seq = NULL;
-	}
+void ik_fasta_free(ik_fasta ff) {
+	ik_free(ff->def);
+	ik_free(ff->seq);
 	ik_free(ff);
-	ff = NULL;
 }
 
-ik_fasta ik_fasta_new (const char * def, const char * seq) {
-	ik_fasta ff = ik_malloc(sizeof(struct ik_fasta));
+ik_fasta ik_fasta_new (const char *def, const char *seq) {
+	ik_fasta ff = ik_malloc(sizeof(struct ik_FASTA));
 	ff->def	    = ik_malloc(strlen(def) +1);
 	ff->seq	    = ik_malloc(strlen(seq) +1);
 	ff->length  = strlen(seq);
@@ -35,12 +27,12 @@ ik_fasta ik_fasta_new (const char * def, const char * seq) {
 	return ff;
 }
 
-ik_fasta ik_fasta_read (FILE * stream) {
+ik_fasta ik_fasta_read(FILE *stream) {
 	char	 c;
 	int      i;
 	size_t	 size;
-	char   * seq;
-	char   * def;
+	char    *seq;
+	char    *def;
 	ik_fasta ff;
 	
 	c = fgetc(stream);
@@ -91,7 +83,7 @@ ik_fasta ik_fasta_read (FILE * stream) {
 
 static int FASTA_LINE_LENGTH = 50;
 
-void ik_fasta_write (FILE * stream, const ik_fasta ff) {
+void ik_fasta_write(FILE *stream, const ik_fasta ff) {
 	int i;
 	
 	if (ff->def[0] != '>') fprintf(stream, ">");
@@ -129,26 +121,19 @@ void ik_fasta_set_line_length (int length) {
 14	V	[ACG]
 */
 
-void ik_dna_free (ik_dna dna) {
-	ik_free(dna->def); dna->def = NULL;
-	ik_free(dna->seq); dna->seq = NULL;
-	ik_free(dna->num); dna->num = NULL;
+void ik_dna_free(ik_dna dna) {
+	ik_free(dna->def);
+	ik_free(dna->seq);
+	ik_free(dna->num);
 	ik_free(dna);
 }
 
-void ik_pro_free (ik_pro pro) {
-	ik_free(pro->def); pro->def = NULL;
-	ik_free(pro->seq); pro->seq = NULL;
-	ik_free(pro->num); pro->num = NULL;
-	ik_free(pro);
-}
-
-ik_dna ik_dna_new (const char * def, const char * seq) {
+ik_dna ik_dna_new (const char *def, const char *seq) {
 	int    i;
 	int    illegal[256]; // illegal letters
 	ik_dna dna;
 	
-	dna = ik_malloc(sizeof(struct ik_dna));
+	dna = ik_malloc(sizeof(struct ik_DNA));
 	
 	for (i = 0; i < 256; i++) illegal[i] = 0;
 	
@@ -242,8 +227,15 @@ ik_dna ik_dna_anti (const char *def, const ik_dna dna) {
 	return anti;
 }
 
-ik_pro ik_pro_new (const char * def, const char * seq) {
-	ik_pro pro = ik_malloc(sizeof(struct ik_pro));
+void ik_pro_free(ik_pro pro) {
+	ik_free(pro->def);
+	ik_free(pro->seq);
+	ik_free(pro->num);
+	ik_free(pro);
+}
+
+ik_pro ik_pro_new (const char *def, const char *seq) {
+	ik_pro pro = ik_malloc(sizeof(struct ik_PRO));
 	
 	/* completely unfinished */
 	

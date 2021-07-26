@@ -22,10 +22,10 @@ static char ik_version_number[] = "2004-01-12";
 static char ik_program_name[1024] = "name not set";
 
 char * ik_get_version_number (void) {return ik_version_number;}
-void   ik_set_program_name (const char * s) {strcpy(ik_program_name, s);}
+void   ik_set_program_name (const char *s) {strcpy(ik_program_name, s);}
 char * ik_get_program_name (void) {return ik_program_name;}
 
-void ik_exit (int code, const char * format, ...) {
+void ik_exit(int code, const char* format, ...) {
 	va_list args;
 	
 	fflush(stdout);
@@ -40,10 +40,10 @@ void ik_exit (int code, const char * format, ...) {
 	exit(code);
 }
 
-void ik_output (FILE * stream, int argc, ...) {
+void ik_output(FILE *stream, int argc, ...) {
 	int i;
 	va_list ap;
-	char * s;
+	char *s;
 	
 	va_start(ap, argc);
 	for (i = 0; i < argc; i++) {
@@ -54,51 +54,46 @@ void ik_output (FILE * stream, int argc, ...) {
 	fflush(stream);
 }
 
-void * ik_malloc (size_t size) {
-	void * mem;
+void * ik_malloc(size_t size) {
+	void *mem;
 	mem = malloc(size);
 	if (mem == NULL) ik_exit(1, "ik_malloc %d", size);
 	return mem;
 }
 
-void * ik_calloc (size_t count, size_t size) {
-	void * mem;
+void * ik_calloc(size_t count, size_t size) {
+	void *mem;
 	mem = calloc(count, size);
 	if (mem == NULL) ik_exit(1, "ik_calloc %d %d", count, size);
 	return mem;
 }
 
-void * ik_realloc (void * p, size_t size) {
-	void * mem;
+void * ik_realloc(void *p, size_t size) {
+	void *mem;
 	mem = realloc(p, size);
 	if (mem == NULL) ik_exit(1, "ik_realloc %d", size);
 	return mem;
 }
 
-void ik_free (void * p) {
+void ik_free(void *p) {
 	free(p);
-	p = NULL;
 }
 
-void ik_ivec_free (ik_ivec vec) {
+void ik_ivec_free(ik_ivec vec) {
 	if (vec == NULL) return;
-	if (vec->elem) {
-		ik_free(vec->elem);
-		vec->elem = NULL;
-	}
+	if (vec->elem) ik_free(vec->elem);
 	ik_free(vec);
-	vec = NULL;
 }
 
 ik_ivec ik_ivec_new(void) {
-	ik_ivec vec = ik_malloc(sizeof(struct ik_ivec));
+	ik_ivec vec = ik_malloc(sizeof(struct ik_IVEC));
 	vec->size  = 0;
 	vec->limit = 0;
 	vec->elem  = NULL;
 	return vec;
 }
 
-void ik_ivec_push (ik_ivec vec, int val) {
+void ik_ivec_push(ik_ivec vec, int val) {
 	if (vec->limit == vec->size) {
 		if (vec->limit == 0) vec->limit	 = 1;
 		else				 vec->limit *= 2;
@@ -109,25 +104,21 @@ void ik_ivec_push (ik_ivec vec, int val) {
 	vec->size++;
 }
 
-void ik_fvec_free (ik_fvec vec) {
+void ik_fvec_free(ik_fvec vec) {
 	if (vec == NULL) return;
-	if (vec->elem) {
-		ik_free(vec->elem);
-		vec->elem = NULL;
-	}
+	if (vec->elem) ik_free(vec->elem);
 	ik_free(vec);
-	vec = NULL;
 }
 
 ik_fvec ik_fvec_new(void) {
-	ik_fvec vec = ik_malloc(sizeof(struct ik_fvec));
+	ik_fvec vec = ik_malloc(sizeof(struct ik_FVEC));
 	vec->size  = 0;
 	vec->limit = 0;
 	vec->elem  = NULL;
 	return vec;
 }
 
-void ik_fvec_push (ik_fvec vec, float val) {
+void ik_fvec_push(ik_fvec vec, float val) {
 	if (vec->limit == vec->size) {
 		if (vec->limit == 0) vec->limit	 = 1;
 		else				 vec->limit *= 2;
@@ -138,28 +129,26 @@ void ik_fvec_push (ik_fvec vec, float val) {
 	vec->size++;
 }
 
-void ik_tvec_free (ik_tvec vec) {
+void ik_tvec_free(ik_tvec vec) {
 	int i;
 	
 	if (vec == NULL) return;
 	if (vec->elem) {
 		for (i = 0; i < vec->size; i++) ik_free(vec->elem[i]);
 		ik_free(vec->elem);
-		vec->elem = NULL;
 	}
 	ik_free(vec);
-	vec = NULL;
 }
 
-ik_tvec ik_tvec_new (void) {
-	ik_tvec vec = ik_malloc(sizeof(struct ik_tvec));
+ik_tvec ik_tvec_new(void) {
+	ik_tvec vec = ik_malloc(sizeof(struct ik_TVEC));
 	vec->size  = 0;
 	vec->limit = 0;
 	vec->elem  = NULL;
 	return vec;
 }
 
-void ik_tvec_push (ik_tvec vec, const char * text) {
+void ik_tvec_push(ik_tvec vec, const char *text) {
 	if (vec->limit == vec->size) {
 		if (vec->limit == 0) vec->limit	 = 1;
 		else				 vec->limit *= 2;
@@ -171,25 +160,21 @@ void ik_tvec_push (ik_tvec vec, const char * text) {
 	vec->size++;
 }
 
-void ik_vec_free (ik_vec vec) {
+void ik_vec_free(ik_vec vec) {
 	if (vec == NULL) return;
-	if (vec->elem) {
-		ik_free(vec->elem);
-		vec->elem = NULL;
-	}
+	if (vec->elem) ik_free(vec->elem);
 	ik_free(vec);
-	vec = NULL;
 }
 
-ik_vec ik_vec_new (void) {
-	ik_vec vec = ik_malloc(sizeof(struct ik_vec));
+ik_vec ik_vec_new(void) {
+	ik_vec vec = ik_malloc(sizeof(struct ik_VEC));
 	vec->size  = 0;
 	vec->limit = 0;
 	vec->elem  = NULL;
 	return vec;
 }
 
-void ik_vec_push (ik_vec vec, void * p) {
+void ik_vec_push(ik_vec vec, void *p) {
 	if (vec->limit == vec->size) {
 		if (vec->limit == 0) vec->limit	 = 1;
 		else				 vec->limit *= 2;
@@ -211,30 +196,30 @@ static double HASH_MULTIPLIER[7] = {
 	3.3166247904  /* square root of 11 */
 };
 static float MAX_HASH_DEPTH = 2.0;
-static int HashLevelToSlots (int level) {return pow(4, level);}
-static int HashFunc (const ik_map hash, const char * key) {
+static int HashLevelToSlots(int level) {return pow(4, level);}
+static int HashFunc(const ik_map hash, const char *key) {
 	int	   i;
 	double sum = 0;
 	for (i = 0; i < strlen(key); i++) sum += key[i] * HASH_MULTIPLIER[i % 7];
 	return (int) (hash->slots * (sum - floor(sum)));
 }
 
-static void ExpandHash (ik_map hash) {
-	int      i, j;
-	char   * key = NULL;
-	void   * val = NULL;
-	int		 oldslots = hash->slots;
-	ik_vec * oldkey = hash->key;
-	ik_vec * oldval = hash->val;
-	ik_vec	 kvec;
-	ik_vec	 vvec;
-	ik_tvec	 keys;
+static void ExpandHash(ik_map hash) {
+	int     i, j;
+	char   *key = NULL;
+	void   *val = NULL;
+	int		oldslots = hash->slots;
+	ik_vec *oldkey = hash->key;
+	ik_vec *oldval = hash->val;
+	ik_vec	kvec;
+	ik_vec	vvec;
+	ik_tvec	keys;
 	
 	/* create the new hash */
 	hash->level = hash->level +1;
 	hash->slots = HashLevelToSlots(hash->level);
-	hash->key	= ik_malloc(hash->slots * sizeof(struct ik_vec));
-	hash->val	= ik_malloc(hash->slots * sizeof(struct ik_vec));
+	hash->key	= ik_malloc(hash->slots * sizeof(struct ik_VEC));
+	hash->val	= ik_malloc(hash->slots * sizeof(struct ik_VEC));
 	for (i = 0; i < hash->slots; i++) {
 		hash->key[i] = ik_vec_new();
 		hash->val[i] = ik_vec_new();
@@ -269,35 +254,24 @@ static void ExpandHash (ik_map hash) {
 	ik_tvec_free(keys);
 }
 
-void ik_map_free (ik_map hash) {
+void ik_map_free(ik_map hash) {
 	int i;
 	
 	if (hash == NULL) return;
 		
 	for (i = 0; i < hash->slots; i++) {
-		if (hash->key[i]) {
-			ik_vec_free(hash->key[i]);
-			hash->key[i] = NULL;
-		}
-		if (hash->val[i]) {
-			ik_vec_free(hash->val[i]);
-			hash->val[i] = NULL;
-		}
+		if (hash->key[i]) ik_vec_free(hash->key[i]);
+		if (hash->val[i]) ik_vec_free(hash->val[i]);
 	}
 	ik_tvec_free(hash->keys);
-	hash->keys = NULL;
 	ik_vec_free(hash->vals);
-	hash->vals = NULL;
 	ik_free(hash->key);
-	hash->key = NULL;
 	ik_free(hash->val);
-	hash->val = NULL;
 	ik_free(hash);
-	hash = NULL;
 }
 
-ik_map ik_map_new (void) {
-	ik_map hash = ik_malloc(sizeof(struct ik_map));
+ik_map ik_map_new(void) {
+	ik_map hash = ik_malloc(sizeof(struct ik_MAP));
 	hash->level = 0;
 	hash->slots = 0;
 	hash->keys	= ik_tvec_new();
@@ -308,9 +282,9 @@ ik_map ik_map_new (void) {
 	return hash;
 }
 
-void * ik_map_get (const ik_map hash, const char * key) {
-	int	   i, index;
-	char * string = NULL;
+void * ik_map_get(const ik_map hash, const char *key) {
+	int	  i, index;
+	char *string = NULL;
 	index = HashFunc(hash, key);
 	/* resolve collisions */
 	for (i = 0; i < hash->key[index]->size; i++) {
@@ -322,10 +296,10 @@ void * ik_map_get (const ik_map hash, const char * key) {
 	return NULL; /* return is NULL if not found */
 }
 
-void ik_map_set (ik_map hash, const char * key, void * val) {
-	int	   i, index;
-	char * string = NULL;
-	int	   new_key = 1;
+void ik_map_set(ik_map hash, const char *key, void *val) {
+	int	  i, index;
+	char *string = NULL;
+	int	  new_key = 1;
 		
 	index = HashFunc(hash, key);
 	
@@ -352,21 +326,21 @@ void ik_map_set (ik_map hash, const char * key, void * val) {
 	}
 }
 
-ik_tvec ik_map_keys (const ik_map hash) {
+ik_tvec ik_map_keys(const ik_map hash) {
 	int		i;
 	ik_tvec vec = ik_tvec_new();
 	for (i = 0; i < hash->keys->size; i++) ik_tvec_push(vec, hash->keys->elem[i]);
 	return vec;
 }
 
-ik_vec ik_map_vals (const ik_map hash) {
+ik_vec ik_map_vals(const ik_map hash) {
 	int	   i;
 	ik_vec vec = ik_vec_new();
 	for (i = 0; i < hash->vals->size; i++) ik_vec_push(vec, hash->vals->elem[i]);
 	return vec;
 }
 
-void ik_map_stat (const ik_map hash) {
+void ik_map_stat(const ik_map hash) {
 	int i, max, min, total, count;
 	max = 0;
 	min = 1000000;
@@ -384,92 +358,80 @@ void ik_map_stat (const ik_map hash) {
 
 /* int map */
 
-void ik_imap_free (ik_imap imap) {
-	if (imap == NULL) return;
+void ik_imap_free(ik_imap imap) {
 	ik_map_free(imap->hash);
 	ik_ivec_free(imap->ivec);
-	imap->hash = NULL;
-	imap->ivec = NULL;
 	ik_free(imap);
-	imap = NULL;
 }
 
-ik_imap ik_imap_new (void) {
-	ik_imap imap = ik_malloc(sizeof(struct ik_imap));
+ik_imap ik_imap_new(void) {
+	ik_imap imap = ik_malloc(sizeof(struct ik_IMAP));
 	imap->hash = ik_map_new();
 	imap->ivec = ik_ivec_new();
 	return imap;
 }
 
-void ik_imap_set (ik_imap imap, const char * key, int val) {
+void ik_imap_set(ik_imap imap, const char *key, int val) {
 	ik_ivec_push(imap->ivec, val);
 	ik_map_set(imap->hash, key, &imap->ivec->elem[imap->ivec->size -1]);
 }
 
-int ik_imap_get (ik_imap imap, const char * key) {
-	int * ref;
+int ik_imap_get(ik_imap imap, const char *key) {
+	int *ref;
 	ref = ik_map_get(imap->hash, key);
 	if (ref == 0) return 0;
-	else          return * ref;
+	else          return *ref;
 }
 
 /* float map */
 
-void ik_fmap_free (ik_fmap fmap) {
-	if (fmap == NULL) return;
+void ik_fmap_free(ik_fmap fmap) {
 	ik_map_free(fmap->hash);
 	ik_fvec_free(fmap->fvec);
-	fmap->hash = NULL;
-	fmap->fvec = NULL;
 	ik_free(fmap);
-	fmap = NULL;
 }
 
-ik_fmap ik_fmap_new (void) {
-	ik_fmap fmap = ik_malloc(sizeof(struct ik_fmap));
+ik_fmap ik_fmap_new(void) {
+	ik_fmap fmap = ik_malloc(sizeof(struct ik_FMAP));
 	fmap->hash = ik_map_new();
 	fmap->fvec = ik_fvec_new();
 	return fmap;
 }
 
-void ik_fmap_set (ik_fmap fmap, const char * key, float val) {
+void ik_fmap_set(ik_fmap fmap, const char *key, float val) {
 	ik_fvec_push(fmap->fvec, val);
 	ik_map_set(fmap->hash, key, &fmap->fvec->elem[fmap->fvec->size -1]);
 }
 
-float ik_fmap_get (ik_fmap fmap, const char * key) {
-	float * ref;
+float ik_fmap_get(ik_fmap fmap, const char *key) {
+	float *ref;
 	ref = ik_map_get(fmap->hash, key);
 	if (ref == 0) return 0;
-	else          return * ref;
+	else          return *ref;
 }
 
 
 /* text map */
 
-void ik_tmap_free (ik_tmap t) {
-	if (t == NULL) return;
+void ik_tmap_free(ik_tmap t) {
 	ik_map_free(t->hash);
 	ik_tvec_free(t->tvec);
-	t->hash = NULL;
-	t->tvec = NULL;
 	ik_free(t);
-	t = NULL;
 }
 
-ik_tmap ik_tmap_new (void) {
-	ik_tmap t = ik_malloc(sizeof(struct ik_tmap));
+ik_tmap ik_tmap_new(void) {
+	ik_tmap t = ik_malloc(sizeof(struct ik_TMAP));
 	t->hash = ik_map_new();
 	t->tvec = ik_tvec_new();
 	return t;
 }
 
-void ik_tmap_set (ik_tmap t, const char * key, const char * val) {
+void ik_tmap_set(ik_tmap t, const char *key, const char *val) {
 	ik_tvec_push(t->tvec, val);
 	ik_map_set(t->hash, key, t->tvec->last);
 }
 
-char * ik_tmap_get (ik_tmap t, const char * key) {
+char * ik_tmap_get(ik_tmap t, const char *key) {
 	return (char *)ik_map_get(t->hash, key);
 }
 	
@@ -479,7 +441,7 @@ static ik_tvec COMMAND_LINE = NULL;
 static ik_map CL_REGISTER	= NULL;
 static ik_map CL_OPTIONS	= NULL;
 
-void ik_register_option (const char * name, int flag) {
+void ik_register_option(const char *name, int flag) {
 	if (COMMAND_LINE == NULL) {
 		COMMAND_LINE = ik_tvec_new();
 		CL_REGISTER	 = ik_map_new();
@@ -493,9 +455,9 @@ void ik_register_option (const char * name, int flag) {
 	}
 }
 
-void ik_parse_options (int * argc, char ** argv) {
+void ik_parse_options(int *argc, char **argv) {
 	int i;
-	char * token = NULL;
+	char *token = NULL;
 	
 	for (i = 0; i < *argc; i++) {
 		token = argv[i];
@@ -525,26 +487,24 @@ void ik_parse_options (int * argc, char ** argv) {
 	}
 }
 
-char * ik_option (const char * tag) {
+char * ik_option(const char *tag) {
 	return ik_map_get(CL_OPTIONS, tag);
 }
 
 /* pipe */
 
-void ik_pipe_close (ik_pipe pipe) {
+void ik_pipe_close(ik_pipe pipe) {
 	pipe->mode = 0;
 	ik_free(pipe->name);
-	pipe->name = NULL;
 	if (pipe->gzip) pclose(pipe->stream);
 	else			fclose(pipe->stream);
-	pipe->stream = NULL;
 	pipe->gzip = 0;
 }
 
-ik_pipe ik_pipe_open (const char * name, const char * mode) {
+ik_pipe ik_pipe_open(const char *name, const char *mode) {
 	char	command[1024];
 	int     length = strlen(name);
-	ik_pipe pipe = ik_malloc(sizeof(struct ik_pipe));
+	ik_pipe pipe = ik_malloc(sizeof(struct ik_PIPE));
 	
 	if		(strcmp(mode, "r") == 0)  pipe->mode = 0;
 	else if (strcmp(mode, "w") == 0)  pipe->mode = 1;
