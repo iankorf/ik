@@ -1,8 +1,7 @@
 The ik Library
 ==============
 
-Toolbox for building simple sequence analysis programs. How simple is simple?
-Nucleic acid and amino acid sequences are simply `char *`.
+Toolbox for building simple sequence analysis programs.  `char *`.
 
 ## Core Functions ##
 

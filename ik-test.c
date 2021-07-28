@@ -3,7 +3,7 @@
 #include "toolbox.h"
 #include "sequence.h"
 
-static int ITERATIONS = 1000;
+static int ITERATIONS = 9999;
 void test_ivec (void);
 void test_fvec (void);
 void test_tvec (void);
@@ -25,7 +25,7 @@ options:\n\
   -fmap\n\
   -tmap\n\
   -map\n\
-  -iterate <int> [1000]\n\
+  -iterate <int> [9999]\n\
 ";
 
 int main (int argc, char ** argv) {
@@ -73,50 +73,54 @@ int main (int argc, char ** argv) {
 	return 0;
 }
 
-#define ILIMIT 10000
-
 void test_ivec (void) {
 	int i, j;
 	ik_ivec ivec;
 	
-	printf("ivec\n");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "ivec: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		ivec = ik_ivec_new();
-		for (j = 0; j < 4000; j++) {
+		for (j = 0; j < 99999; j++) {
 			ik_ivec_push(ivec, j);
 		}
 		ik_ivec_free(ivec);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_fvec (void) {
 	int i, j;
 	ik_fvec fvec;
 	
-	printf("fvec\n");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "fvec: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		fvec = ik_fvec_new();
-		for (j = 0; j < 3000; j++) {
+		for (j = 0; j < 99999; j++) {
 			ik_fvec_push(fvec, j);
 		}
 		ik_fvec_free(fvec);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_tvec (void) {
 	int i, j;
 	ik_tvec tvec;
 	char text[64];
-	
-	printf("tvec\n");
+
+	sprintf(text, "hello world");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "tvec: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		tvec = ik_tvec_new();
-		for (j = 0; j < 200; j++) {
-			sprintf(text, "string %d", j);
+		for (j = 0; j < 2000; j++) {
 			ik_tvec_push(tvec, text);
 		}
 		ik_tvec_free(tvec);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_vec (void) {
@@ -124,15 +128,17 @@ void test_vec (void) {
 	ik_vec vec;
 	char text[64];
 	
-	printf("vec\n");
+	sprintf(text, "hello world");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "vec: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		vec = ik_vec_new();
-		for (j = 0; j < 200; j++) {
-			sprintf(text, "string %d", j);
+		for (j = 0; j < 99999; j++) {
 			ik_vec_push(vec, text);
 		}
 		ik_vec_free(vec);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_imap (void) {
@@ -140,15 +146,17 @@ void test_imap (void) {
 	ik_imap imap;
 	char text[64];
 	
-	printf("imap\n");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "imap: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		imap = ik_imap_new();
-		for (j = 0; j < 40; j++) {
+		for (j = 0; j < 400; j++) {
 			sprintf(text, "key %d", j);
 			ik_imap_set(imap, text, j);
 		}
 		ik_imap_free(imap);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_fmap (void) {
@@ -156,15 +164,17 @@ void test_fmap (void) {
 	ik_fmap fmap;
 	char text[64];
 	
-	printf("fmap\n");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "fmap: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		fmap = ik_fmap_new();
-		for (j = 0; j < 40; j++) {
+		for (j = 0; j < 400; j++) {
 			sprintf(text, "key %d", j);
 			ik_fmap_set(fmap, text, j);
 		}
 		ik_fmap_free(fmap);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_tmap (void) {
@@ -172,15 +182,17 @@ void test_tmap (void) {
 	ik_tmap tmap;
 	char text[64];
 	
-	printf("tmap\n");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "tmap: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		tmap = ik_tmap_new();
-		for (j = 0; j < 40; j++) {
+		for (j = 0; j < 400; j++) {
 			sprintf(text, "key %d", j);
 			ik_tmap_set(tmap, text, text);
 		}
 		ik_tmap_free(tmap);
 	}
+	fprintf(stderr, "\n");
 }
 
 void test_map (void) {
@@ -188,13 +200,15 @@ void test_map (void) {
 	ik_map map;
 	char text[64];
 	
-	printf("map\n");
 	for (i = 0; i < ITERATIONS; i++) {
+		if (i % 100 == 0) fprintf(stderr, "map: %d\r",
+			(int) (100 * (float)i/ITERATIONS));
 		map = ik_map_new();
-		for (j = 0; j < 40; j++) {
+		for (j = 0; j < 400; j++) {
 			sprintf(text, "key %d", j);
 			ik_map_set(map, text, text);
 		}
 		ik_map_free(map);
 	}
+	fprintf(stderr, "\n");
 }

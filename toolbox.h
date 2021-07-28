@@ -46,6 +46,7 @@ typedef struct ik_IVEC * ik_ivec;
 void	ik_ivec_free(ik_ivec);
 ik_ivec ik_ivec_new(void);
 void	ik_ivec_push(ik_ivec, int);
+int     ik_ivec_pop(ik_ivec);
 
 // float vector
 struct ik_FVEC {
@@ -58,6 +59,7 @@ typedef struct ik_FVEC * ik_fvec;
 void	ik_fvec_free(ik_fvec);
 ik_fvec ik_fvec_new(void);
 void	ik_fvec_push(ik_fvec, float);
+float   ik_fvec_pop(ik_fvec);
 
 // text vector
 struct ik_TVEC {
@@ -70,6 +72,7 @@ typedef struct ik_TVEC * ik_tvec;
 void	ik_tvec_free(ik_tvec);
 ik_tvec ik_tvec_new(void);
 void	ik_tvec_push(ik_tvec, const char *);
+char *  ik_tvec_pop(ik_tvec);
 
 // generic void * vector
 struct ik_VEC {
@@ -82,6 +85,7 @@ typedef struct ik_VEC * ik_vec;
 void   ik_vec_free(ik_vec);
 ik_vec ik_vec_new(void);
 void   ik_vec_push(ik_vec, void *);
+void * ik_vec_pop(ik_vec);
 
 // generic map (text key, void * value)
 struct ik_MAP {

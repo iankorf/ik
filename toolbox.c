@@ -102,6 +102,12 @@ void ik_ivec_push(ik_ivec vec, int val) {
 	vec->size++;
 }
 
+int ik_ivec_pop(ik_ivec vec) {
+	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	vec->size--;
+	return vec->elem[vec->size];
+}
+
 void ik_fvec_free(ik_fvec vec) {
 	if (vec == NULL) return;
 	if (vec->elem) ik_free(vec->elem);
@@ -125,6 +131,12 @@ void ik_fvec_push(ik_fvec vec, float val) {
 	vec->elem[vec->size] = val;
 	vec->last = val;
 	vec->size++;
+}
+
+float ik_fvec_pop(ik_fvec vec) {
+	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	vec->size--;
+	return vec->elem[vec->size];
 }
 
 void ik_tvec_free(ik_tvec vec) {
@@ -158,6 +170,12 @@ void ik_tvec_push(ik_tvec vec, const char *text) {
 	vec->size++;
 }
 
+char * ik_tvec_pop(ik_tvec vec) {
+	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	vec->size--;
+	return vec->elem[vec->size];
+}
+
 void ik_vec_free(ik_vec vec) {
 	if (vec == NULL) return;
 	if (vec->elem) ik_free(vec->elem);
@@ -181,6 +199,12 @@ void ik_vec_push(ik_vec vec, void *p) {
 	vec->elem[vec->size] = p;
 	vec->last = vec->elem[vec->size];
 	vec->size++;
+}
+
+void * ik_vec_pop(ik_vec vec) {
+	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	vec->size--;
+	return vec->elem[vec->size];
 }
 
 // hashing materials
