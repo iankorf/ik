@@ -87,7 +87,7 @@ void test_ivec (void) {
 			ik_ivec_push(ivec, j);
 		}
 		for (j = 0; j < 99999; j++) {
-			if (ivec->elem[j] != j) ik_exit(1, "ivec integrity failure");
+			if (ivec->elem[j] != j) ik_exit("ivec integrity failure");
 		}
 		ik_ivec_free(ivec);
 	}
@@ -106,7 +106,7 @@ void test_fvec (void) {
 			ik_fvec_push(fvec, j);
 		}
 		for (j = 0; j < 99999; j++) {
-			if (fvec->elem[j] != j) ik_exit(1, "fvec integrity failure");
+			if (fvec->elem[j] != j) ik_exit("fvec integrity failure");
 		}
 		ik_fvec_free(fvec);
 	}
@@ -150,7 +150,7 @@ void test_imap (void) {
 			int v = ik_imap_get(imap, keys->elem[k]);
 			if (v != k) {
 				printf("key %d has value %d\n", k, v);
-				ik_exit(1, "imap integrity failure");
+				ik_exit("imap integrity failure");
 			}
 		}
 		ik_tvec_free(keys);
@@ -178,7 +178,7 @@ void test_fmap (void) {
 			double v = ik_fmap_get(fmap, keys->elem[k]);
 			if (v != k) {
 				printf("key %d has value %f\n", k, v);
-				ik_exit(1, "imap integrity failure");
+				ik_exit("imap integrity failure");
 			}
 		}
 		ik_tvec_free(keys);
@@ -225,7 +225,7 @@ void test_tmap (void) {
 			char* v = ik_tmap_get(tmap, keys->elem[k]);
 			if (strcmp(v, keys->elem[k]) != 0) {
 				printf("key %s has value %s\n", keys->elem[k], v);
-				ik_exit(1, "tmap integrity failure");
+				ik_exit("tmap integrity failure");
 			}
 		}
 		ik_tvec_free(keys);

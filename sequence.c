@@ -34,7 +34,7 @@ ik_fasta ik_fasta_read(FILE *stream) {
 	
 	c = fgetc(stream);
 	if (c == EOF) return NULL;
-	if (c != '>') ik_exit(1, "ik_fasta: doesn't look like a fasta file");
+	if (c != '>') ik_exit("ik_fasta: doesn't look like a fasta file");
 	ungetc(c, stream);
 	
 	// def
@@ -139,7 +139,7 @@ char * ik_revcomp (const char *seq) {
 			case 'h': str[length -i] = 'd'; break;
 			case 'V': str[length -i] = 'B'; break;
 			case 'v': str[length -i] = 'b'; break;
-			default:  ik_exit(1, "alphabet error %c", seq[i-1]);
+			default:  ik_exit("alphabet error %c", seq[i-1]);
 		}
 	}
 

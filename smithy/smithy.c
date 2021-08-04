@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 	ik_register_option("-a", 1);
 	ik_parse_options(&argc, argv);
 	
-	if (argc == 1) ik_exit(1, "%s", usage);
+	if (argc == 1) ik_exit("%s", usage);
 	
 	file1 = argv[1];
 	file2 = argv[2];
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 			switch (a) {
 				case 1: 
 				case 2: 
-				default: ik_exit(1, "algorithm out of range");
+				default: ik_exit("algorithm out of range");
 			}
 			*/
 			stuff(m, n, g, a);

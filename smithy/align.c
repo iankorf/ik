@@ -143,7 +143,7 @@ void set_matrix (int N) {
 		for (i = 0; i < 25; i++) for (j = 0; j < 25; j++) MAT[i][j] = NT[i][j];
 		GAP = -2;
 	} else {
-		ik_exit(1, "invalid matrix identifier");
+		ik_exit("invalid matrix identifier");
 	}
 	
 }

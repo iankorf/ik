@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 	ik_register_option("-a", 1);
 	ik_parse_options(&argc, argv);
 	
-	if (argc == 1) ik_exit(1, "%s", usage);
+	if (argc == 1) ik_exit("%s", usage);
 	
 	file = argv[1];
 	if (ik_option("-w")) w = atoi(ik_option("-w"));
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
 		switch (alg) {
 			case 1: mask = dust1(in, w, h, lc); break;
 			case 2: mask = dust2(in, w, h, lc); break;
-			default: ik_exit(1, "algorithm out of range");
+			default: ik_exit("algorithm out of range");
 		}	
 		
 		out = ik_fasta_new(in->def, mask);

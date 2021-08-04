@@ -22,7 +22,7 @@ void   ik_set_program_name(const char *);
 char * ik_get_program_name(void);
 
 // specialized output
-void ik_exit(int, const char *, ...);
+void ik_exit(const char *, ...);
 void ik_output(FILE *, int, ...);
 
 // memory

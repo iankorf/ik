@@ -12,19 +12,18 @@ char * ik_get_version_number (void) {return ik_version_number;}
 void   ik_set_program_name (const char *s) {strcpy(ik_program_name, s);}
 char * ik_get_program_name (void) {return ik_program_name;}
 
-void ik_exit(int code, const char* format, ...) {
+void ik_exit(const char* format, ...) {
 	va_list args;
 	
 	fflush(stdout);
-	fprintf(stderr, "ERROR code %d (from program %s, libarary version %s)\n",
-		code,
+	fprintf(stderr, "ERROR from program %s, libarary version %s\n",
 		ik_get_program_name(),
 		ik_get_version_number());
 	va_start(args, format);
 	vfprintf(stderr, format, args);
 	va_end(args);
 	fprintf(stderr, "\n");
-	exit(code);
+	exit(1);
 }
 
 void ik_output(FILE *stream, int argc, ...) {
@@ -44,21 +43,21 @@ void ik_output(FILE *stream, int argc, ...) {
 void * ik_malloc(size_t size) {
 	void *mem;
 	mem = malloc(size);
-	if (mem == NULL) ik_exit(1, "ik_malloc %d", size);
+	if (mem == NULL) ik_exit("ik_malloc %d", size);
 	return mem;
 }
 
 void * ik_calloc(size_t count, size_t size) {
 	void *mem;
 	mem = calloc(count, size);
-	if (mem == NULL) ik_exit(1, "ik_calloc %d %d", count, size);
+	if (mem == NULL) ik_exit("ik_calloc %d %d", count, size);
 	return mem;
 }
 
 void * ik_realloc(void *p, size_t size) {
 	void *mem;
 	mem = realloc(p, size);
-	if (mem == NULL) ik_exit(1, "ik_realloc %d", size);
+	if (mem == NULL) ik_exit("ik_realloc %d", size);
 	return mem;
 }
 
@@ -92,7 +91,7 @@ void ik_ivec_push(ik_ivec vec, int val) {
 }
 
 int ik_ivec_pop(ik_ivec vec) {
-	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	if (vec->size == 0) ik_exit("can't pop a zero-length vector");
 	vec->size--;
 	return vec->elem[vec->size];
 }
@@ -123,7 +122,7 @@ void ik_fvec_push(ik_fvec vec, float val) {
 }
 
 float ik_fvec_pop(ik_fvec vec) {
-	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	if (vec->size == 0) ik_exit("can't pop a zero-length vector");
 	vec->size--;
 	return vec->elem[vec->size];
 }
@@ -160,7 +159,7 @@ void ik_tvec_push(ik_tvec vec, const char *text) {
 }
 
 char * ik_tvec_pop(ik_tvec vec) {
-	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	if (vec->size == 0) ik_exit("can't pop a zero-length vector");
 	vec->size--;
 	return vec->elem[vec->size];
 }
@@ -191,7 +190,7 @@ void ik_vec_push(ik_vec vec, void *p) {
 }
 
 void * ik_vec_pop(ik_vec vec) {
-	if (vec->size == 0) ik_exit(1, "can't pop a zero-length vector");
+	if (vec->size == 0) ik_exit("can't pop a zero-length vector");
 	vec->size--;
 	return vec->elem[vec->size];
 }
@@ -496,7 +495,7 @@ void ik_register_option(const char *name, int flag) {
 	switch (flag) {
 		case 0: ik_map_set(CL_REGISTER, name, (void *)1); break;
 		case 1: ik_map_set(CL_REGISTER, name, (void *)2); break;
-		default: ik_exit(1, "ik_register_option: flag 0 or 1");
+		default: ik_exit("ik_register_option: flag 0 or 1");
 	}
 }
 
@@ -509,7 +508,7 @@ void ik_parse_options(int *argc, char **argv) {
 		if (token[0] == '-' && strlen(token) > 1) {
 			switch ((size_t)ik_map_get(CL_REGISTER, token)) {
 				case 0: 
-					ik_exit(1, "unknown option (%s)", token); 
+					ik_exit("unknown option (%s)", token); 
 					break;
 				case 1: 
 					ik_map_set(CL_OPTIONS, token, token); 
@@ -519,7 +518,7 @@ void ik_parse_options(int *argc, char **argv) {
 					i++;
 					break;
 				default:
-					ik_exit(1, "not possible");
+					ik_exit("not possible");
 			}
 		} else {
 			ik_tvec_push(COMMAND_LINE, argv[i]);
@@ -554,7 +553,7 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 	if		(strcmp(mode, "r") == 0)  pipe->mode = 0;
 	else if (strcmp(mode, "w") == 0)  pipe->mode = 1;
 	else if (strcmp(mode, "r+") == 0) pipe->mode = 2;
-	else ik_exit(1, "r, w, or r+ only in ik_pipe");
+	else ik_exit("r, w, or r+ only in ik_pipe");
    
 	pipe->name = ik_malloc(length + 1);
 	strcpy(pipe->name, name);
@@ -570,7 +569,7 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 		name[length -1] == 'Z') pipe->gzip = 1; // .Z
 	
 	if (pipe->gzip) {
-		if (pipe->mode != 0) ik_exit(1, "compressed pipes are read only");
+		if (pipe->mode != 0) ik_exit("compressed pipes are read only");
 		sprintf(command, "gunzip -c %s", name);
 		pipe->stream = popen(command, "r");
 	} else {
@@ -579,7 +578,7 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 	}
 	
 	if (pipe->stream == NULL) {
-		ik_exit(1, "failed to open %s\n", name);
+		ik_exit("failed to open %s\n", name);
 	}
 				
 	return pipe;

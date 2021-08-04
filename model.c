@@ -103,7 +103,7 @@ ik_mm ik_read_mm(const char *filename) {
 			score = malloc(sizeof(double) * size);
 		} else if (sscanf(line, "%s %lf", kmer, &p) == 2) {
 			int idx = dna2dec(kmer);
-			if (idx == -1) ik_exit(1, "alphabet error in: %s", kmer);
+			if (idx == -1) ik_exit("alphabet error in: %s", kmer);
 			score[idx] = prob2score(p);
 		}
 	}
