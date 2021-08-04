@@ -19,7 +19,7 @@ int dna2dec(const char *kmer) {
 			case 'C': idx += pow(4, (k -i -1)) * 1; break;
 			case 'G': idx += pow(4, (k -i -1)) * 2; break;
 			case 'T': idx += pow(4, (k -i -1)) * 3; break;
-			default: ik_exit(1, "invalid nt character: %c\n", kmer[i]);
+			default: return -1;
 		}
 	}
 	return idx;
@@ -78,7 +78,7 @@ double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
 			case 'C': p += pwm->score[i][1]; break;
 			case 'G': p += pwm->score[i][2]; break;
 			case 'T': p += pwm->score[i][3]; break;
-			default: ik_exit(1, "invalid nt: %c\n", seq[i+pos]);
+			default: p += -2; // 0.25 or should I throw error?
 		}
 	}
 	return p;
@@ -103,6 +103,7 @@ ik_mm ik_read_mm(const char *filename) {
 			score = malloc(sizeof(double) * size);
 		} else if (sscanf(line, "%s %lf", kmer, &p) == 2) {
 			int idx = dna2dec(kmer);
+			if (idx == -1) ik_exit(1, "alphabet error in: %s", kmer);
 			score[idx] = prob2score(p);
 		}
 	}
@@ -128,8 +129,8 @@ double ik_score_mm(const ik_mm mm, const char *seq, int pos, int end) {
 		strncpy(kmer, seq+i, mm->k);
 		kmer[mm->k] = '\0';
 		int idx = dna2dec(kmer);
-		double val = mm->score[idx];
-		p += val;
+		if (idx == -1) p += -2; // 0.25 or error?
+		else           p += mm->score[idx];
 	}
 	
 	return p;
@@ -191,7 +192,7 @@ ik_len ik_read_len(const char *filename) {
 }
 
 double ik_score_len(const ik_len len, int x) {
-	assert(x > 0);
+	assert(x >= 0);
 	if (x >= len->size) {
 		double p = 1 / len->tail;
 		return pow(1-p, x-1) * p;

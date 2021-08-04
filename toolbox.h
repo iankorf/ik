@@ -16,11 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// numeric constants
-extern const int ik_POWER[6][8];
-extern const float MIN_SCORE;
-extern const float MAX_SCORE;
-
 // library and program info
 char * ik_get_version_number(void);
 void   ik_set_program_name(const char *);
