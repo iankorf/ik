@@ -84,6 +84,9 @@ void test_ivec (void) {
 		for (j = 0; j < 99999; j++) {
 			ik_ivec_push(ivec, j);
 		}
+		for (j = 0; j < 99999; j++) {
+			if (ivec->elem[j] != j) ik_exit(1, "ivec integrity failure");
+		}
 		ik_ivec_free(ivec);
 	}
 	fprintf(stderr, "\n");
@@ -99,6 +102,9 @@ void test_fvec (void) {
 		fvec = ik_fvec_new();
 		for (j = 0; j < 99999; j++) {
 			ik_fvec_push(fvec, j);
+		}
+		for (j = 0; j < 99999; j++) {
+			if (fvec->elem[j] != j) ik_exit(1, "fvec integrity failure");
 		}
 		ik_fvec_free(fvec);
 	}
@@ -117,6 +123,10 @@ void test_tvec (void) {
 		tvec = ik_tvec_new();
 		for (j = 0; j < 2000; j++) {
 			ik_tvec_push(tvec, text);
+		}
+		for (j = 0; j < 2000; j++) {
+			if (strcmp("hello world", tvec->elem[j]) != 0)
+				ik_exit(1, "tvec integrity failure");
 		}
 		ik_tvec_free(tvec);
 	}
@@ -154,6 +164,16 @@ void test_imap (void) {
 			sprintf(text, "key %d", j);
 			ik_imap_set(imap, text, j);
 		}
+		ik_tvec keys = ik_imap_keys(imap);
+		for (int k = 0; k < keys->size; k++) {
+			int v = ik_imap_get(imap, keys->elem[k]);
+			if (v != k) {
+				printf("key %d has value %d\n", k, v);
+				ik_exit(1, "imap integrity failure");
+			}
+		}
+		ik_tvec_free(keys);
+		
 		ik_imap_free(imap);
 	}
 	fprintf(stderr, "\n");
@@ -172,6 +192,15 @@ void test_fmap (void) {
 			sprintf(text, "key %d", j);
 			ik_fmap_set(fmap, text, j);
 		}
+		ik_tvec keys = ik_fmap_keys(fmap);
+		for (int k = 0; k < keys->size; k++) {
+			double v = ik_fmap_get(fmap, keys->elem[k]);
+			if (v != k) {
+				printf("key %d has value %f\n", k, v);
+				ik_exit(1, "imap integrity failure");
+			}
+		}
+		ik_tvec_free(keys);
 		ik_fmap_free(fmap);
 	}
 	fprintf(stderr, "\n");
@@ -190,6 +219,16 @@ void test_tmap (void) {
 			sprintf(text, "key %d", j);
 			ik_tmap_set(tmap, text, text);
 		}
+		
+		ik_tvec keys = ik_tmap_keys(tmap);
+		for (int k = 0; k < keys->size; k++) {
+			char* v = ik_tmap_get(tmap, keys->elem[k]);
+			if (strcmp(v, keys->elem[k]) != 0) {
+				printf("key %s has value %s\n", keys->elem[k], v);
+				ik_exit(1, "tmap integrity failure");
+			}
+		}
+		ik_tvec_free(keys);
 		ik_tmap_free(tmap);
 	}
 	fprintf(stderr, "\n");
