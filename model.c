@@ -15,10 +15,10 @@ int dna2dec(const char *kmer) {
 	int idx = 0;
 	for (int i = 0; i < k; i++) {
 		switch (kmer[i]) {
-			case 'A': idx += pow(4, (k -i -1)) * 0; break;
-			case 'C': idx += pow(4, (k -i -1)) * 1; break;
-			case 'G': idx += pow(4, (k -i -1)) * 2; break;
-			case 'T': idx += pow(4, (k -i -1)) * 3; break;
+			case 'A': case 'a': idx += pow(4, (k -i -1)) * 0; break;
+			case 'C': case 'c': idx += pow(4, (k -i -1)) * 1; break;
+			case 'G': case 'g': idx += pow(4, (k -i -1)) * 2; break;
+			case 'T': case 't': idx += pow(4, (k -i -1)) * 3; break;
 			default: return -1;
 		}
 	}
@@ -74,10 +74,10 @@ double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
 	double p = 0;
 	for (int i = 0; i < pwm->size; i++) {
 		switch (seq[i+pos]) {
-			case 'A': p += pwm->score[i][0]; break;
-			case 'C': p += pwm->score[i][1]; break;
-			case 'G': p += pwm->score[i][2]; break;
-			case 'T': p += pwm->score[i][3]; break;
+			case 'A': case 'a': p += pwm->score[i][0]; break;
+			case 'C': case 'c': p += pwm->score[i][1]; break;
+			case 'G': case 'g': p += pwm->score[i][2]; break;
+			case 'T': case 't': p += pwm->score[i][3]; break;
 			default: p += -2; // 0.25 or should I throw error?
 		}
 	}

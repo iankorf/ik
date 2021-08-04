@@ -139,7 +139,7 @@ char * ik_revcomp (const char *seq) {
 			case 'h': str[length -i] = 'd'; break;
 			case 'V': str[length -i] = 'B'; break;
 			case 'v': str[length -i] = 'b'; break;
-			default:  str[length -i] = 'N'; 
+			default:  ik_exit(1, "alphabet error %c", seq[i-1]);
 		}
 	}
 
