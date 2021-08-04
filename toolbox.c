@@ -390,11 +390,20 @@ void ik_imap_set(ik_imap imap, const char *key, int val) {
 	ik_map_set(imap->hash, key, &imap->ivec->elem[imap->ivec->size -1]);
 }
 
-int ik_imap_get(ik_imap imap, const char *key) {
-	int *ref;
-	ref = ik_map_get(imap->hash, key);
-	if (ref == 0) return 0;
-	else          return *ref;
+int ik_imap_get(const ik_imap imap, const char *key) {
+	int *ref = ik_map_get(imap->hash, key);
+	assert(ref != NULL);
+	return *ref;
+}
+
+int ik_imap_exists(const ik_imap imap, const char *key) {
+	void *ref = ik_map_get(imap->hash, key);
+	if (ref == NULL) return 0;
+	return 1;
+}
+
+ik_tvec ik_imap_keys(const ik_imap imap) {
+	return ik_map_keys(imap->hash);
 }
 
 // float map
@@ -417,11 +426,20 @@ void ik_fmap_set(ik_fmap fmap, const char *key, float val) {
 	ik_map_set(fmap->hash, key, &fmap->fvec->elem[fmap->fvec->size -1]);
 }
 
-float ik_fmap_get(ik_fmap fmap, const char *key) {
-	float *ref;
-	ref = ik_map_get(fmap->hash, key);
-	if (ref == 0) return 0;
-	else          return *ref;
+float ik_fmap_get(const ik_fmap fmap, const char *key) {
+	float *ref = ik_map_get(fmap->hash, key);
+	assert(ref != NULL);
+	return *ref;
+}
+
+int ik_fmap_exists(const ik_fmap fmap, const char *key) {
+	void *ref = ik_map_get(fmap->hash, key);
+	if (ref == NULL) return 0;
+	return 1;
+}
+
+ik_tvec ik_fmap_keys(const ik_fmap fmap) {
+	return ik_map_keys(fmap->hash);
 }
 
 */
@@ -446,8 +464,20 @@ void ik_tmap_set(ik_tmap t, const char *key, const char *val) {
 	ik_map_set(t->hash, key, t->tvec->last);
 }
 
-char * ik_tmap_get(ik_tmap t, const char *key) {
-	return (char *)ik_map_get(t->hash, key);
+int ik_tmap_exists(const ik_tmap t, const char *key) {
+	void *ref = ik_map_get(t->hash, key);
+	if (ref == NULL) return 0;
+	return 1;
+}
+
+char * ik_tmap_get(const ik_tmap t, const char *key) {
+	void *ref = ik_map_get(t->hash, key);
+	assert(ref != NULL);
+	return ref;
+}
+
+ik_tvec ik_tmap_keys(const ik_tmap t) {
+	return ik_map_keys(t->hash);
 }
 
 // command line options

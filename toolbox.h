@@ -6,6 +6,7 @@
 #ifndef IK_TOOLBOX_H
 #define IK_TOOLBOX_H
 
+#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <float.h>
@@ -115,7 +116,8 @@ typedef struct ik_IMAP * ik_imap;
 void	ik_imap_free(ik_imap);
 ik_imap ik_imap_new(void);
 void	ik_imap_set(ik_imap, const char *, int);
-int     qik_imap_get(const ik_imap, const char *);
+int     ik_imap_get(const ik_imap, const char *);
+int     ik_imap_exists(const ik_imap, const char *);
 ik_tvec ik_imap_keys(const ik_imap);
 
 // float map
@@ -127,7 +129,8 @@ typedef struct ik_FMAP * ik_fmap;
 void    ik_fmap_free(ik_fmap);
 ik_fmap ik_fmap_new(void);
 void    ik_fmap_set(ik_fmap, const char *, float);
-float   ik_fmap_get(ik_fmap, const char *);
+float   ik_fmap_get(const ik_fmap, const char *);
+int     ik_fmap_exists(const ik_fmap, const char *);
 ik_tvec ik_fmap_keys(const ik_fmap);
 */
 
@@ -140,7 +143,8 @@ typedef struct ik_TMAP * ik_tmap;
 void    ik_tmap_free(ik_tmap);
 ik_tmap ik_tmap_new(void);
 void    ik_tmap_set(ik_tmap, const char *, const char *);
-char *  ik_tmap_get(ik_tmap, const char *);
+char *  ik_tmap_get(const ik_tmap, const char *);
+int     ik_tmap_exists(const ik_tmap, const char *);
 ik_tvec ik_tmap_keys(const ik_tmap);
 
 // command line processing
