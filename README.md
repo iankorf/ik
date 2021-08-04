@@ -1,7 +1,7 @@
 The ik Library
 ==============
 
-Toolbox for building simple sequence analysis programs. The philosophy behind
+Functions for building simple sequence analysis programs. The philosophy behind
 this library is to keep things simple and native. For example, nucleotide and
 protein sequences do not have their own data types: they are just strings.
 
@@ -22,5 +22,7 @@ protein sequences do not have their own data types: they are just strings.
 
 ## Demo Programs ##
 
-+ dusty
-+ smithy
+There are a few programs included to demonstrate how to use the library.
+
++ dusty - complexity filter
++ smithy - pairwise alignment
