@@ -105,6 +105,7 @@ ik_tvec ik_map_keys(const ik_map);
 ik_vec	ik_map_vals(const ik_map);
 void	ik_map_stat(const ik_map);
 
+/*
 // integer map
 struct ik_IMAP {
 	ik_map	hash;
@@ -128,6 +129,7 @@ ik_fmap ik_fmap_new(void);
 void    ik_fmap_set(ik_fmap, const char *, float);
 float   ik_fmap_get(ik_fmap, const char *);
 ik_tvec ik_fmap_keys(const ik_fmap);
+*/
 
 // text map
 struct ik_TMAP {

@@ -5,19 +5,8 @@
 
 #include "toolbox.h"
 
-const float MIN_SCORE = -FLT_MAX;
-const float MAX_SCORE =	 FLT_MAX;
-const int ik_POWER[6][8] = {
-	{0, 0,  0,   0,   0,    0,     0,     0},
-	{1, 1,  1,   1,   1,    1,     1,     1},
-	{1, 2,  4,   8,  16,   32,    64,   128},
-	{1, 3,  9,  27,  81,  243,   729,  2187},
-	{1, 4, 16,  64, 256, 1024,  4096, 16384},
-	{1, 5, 25, 125, 625, 3125, 15625, 78125},
-};
-
 static char ik_version_number[] = "2021";
-static char ik_program_name[1024] = "name not set";
+static char ik_program_name[64] = "name not set";
 
 char * ik_get_version_number (void) {return ik_version_number;}
 void   ik_set_program_name (const char *s) {strcpy(ik_program_name, s);}
@@ -380,6 +369,7 @@ void ik_map_stat(const ik_map hash) {
 		 (float)total / (float)hash->slots);
 }
 
+/*
 // int map
 
 void ik_imap_free(ik_imap imap) {
@@ -434,6 +424,7 @@ float ik_fmap_get(ik_fmap fmap, const char *key) {
 	else          return *ref;
 }
 
+*/
 
 // text map
 

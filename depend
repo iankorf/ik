@@ -1,2 +1,3 @@
+model.o: model.c model.h toolbox.h
 sequence.o: sequence.c sequence.h toolbox.h
 toolbox.o: toolbox.c toolbox.h
