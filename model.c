@@ -160,11 +160,11 @@ ik_len ik_read_len(const char *filename) {
 	size_t  len = 0;
 	ssize_t read;
 	ik_pipe io = ik_pipe_open(filename, "r");
-	double *score;
+	double *score = NULL;
 	double  p;
 	int     idx = 0;
 	int     size;
-	double  last;
+	double  last = 0;
 	char    blah[64];
 	
 	while ((read = getline(&line, &len, io->stream)) != -1) {
