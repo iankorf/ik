@@ -19,6 +19,7 @@ protein sequences do not have their own data types: they are just strings.
 	+ Position weight matrices
 	+ Markov models (more like kmers)
 	+ Length models
++ Feature
 
 ## Demo Programs ##
 
