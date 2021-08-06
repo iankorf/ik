@@ -2,6 +2,8 @@
 #include <assert.h>
 #include "toolbox.h"
 #include "sequence.h"
+#include "model.h"
+#include "feature.h"
 
 /*
 
@@ -18,6 +20,7 @@ void test_vec (void);
 //void test_fmap (void);
 void test_tmap (void);
 void test_map (void);
+void test_feat (void);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
@@ -28,6 +31,7 @@ options:\n\
   -tvec\n\
   -tmap\n\
   -map\n\
+  -feat\n\
   -iterate <int> [9999]\n\
 ";
 
@@ -50,6 +54,7 @@ int main (int argc, char ** argv) {
 //	ik_register_option("-fmap", 0);
 	ik_register_option("-tmap", 0);
 	ik_register_option("-map", 0);
+	ik_register_option("-feat", 0);
 	ik_register_option("-all", 0);
 	ik_parse_options(&argc, argv);
 	
@@ -62,6 +67,7 @@ int main (int argc, char ** argv) {
 //	if (ik_option("-fmap")) test_fmap();
 	if (ik_option("-tmap")) test_tmap();
 	if (ik_option("-map"))	test_map();
+	if (ik_option("-feat")) test_feat();
 	if (ik_option("-all")) {
 		test_ivec();
 		test_fvec();
@@ -70,6 +76,7 @@ int main (int argc, char ** argv) {
 		//test_fmap();
 		test_map();
 		test_tmap();
+		test_feat();
 	}
 
 	return 0;
@@ -232,4 +239,36 @@ void test_tmap (void) {
 		ik_tmap_free(tmap);
 	}
 	fprintf(stderr, "\n");
+}
+
+void test_feat (void) {
+	char *seq = "NNNNNAAAAAGTAAGTTTTTTTTCAGAAAAANNNNN";
+	
+	// simple features
+	for (int i = 0; i < ITERATIONS; i++) {
+		ik_feat f = ik_feat_new(seq, 10, 25);
+		char *s = ik_feat_seq(f);
+		if (strcmp(s, "GTAAGTTTTTTTTCAG") != 0) ik_exit("bad");
+		free(s);
+		ik_feat_free(f);
+	}
+	
+	// mRNA
+	ik_ivec dons = ik_ivec_new();
+	ik_ivec accs = ik_ivec_new();
+	ik_ivec_push(dons, 10);
+	ik_ivec_push(accs, 25);
+	ik_mRNA tx = ik_mRNA_new(seq, 5, 30, dons, accs);
+	for (int i = 0; i < ITERATIONS; i++) {
+		for (int j = 0; j < tx->introns->size; j++) {
+			ik_feat intron = tx->introns->elem[j];
+			char *s = ik_feat_seq(intron);
+			printf("intron %s\n", s);
+		}
+		for (int j = 0; j < tx->exons->size; j++) {
+			ik_feat exon = tx->exons->elem[j];
+			char *s = ik_feat_seq(exon);
+			printf("exon %s\n", s);
+		}
+	}
 }
