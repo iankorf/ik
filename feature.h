@@ -1,17 +1,14 @@
 /******************************************************************************\
- model.h
+ feature.h
  Copyright (C) Ian Korf
 \******************************************************************************/
 
 #ifndef IK_FEATURE_H
 #define IK_FEATURE_H
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
 #include "toolbox.h"
 
-// features are always positive strand at this point
+// simple features (no type, strand, group)
 struct ik_FEAT {
 	const char *seq; // parent sequence, not copied
 	int         beg; // 0-based
@@ -22,6 +19,7 @@ ik_feat ik_feat_new(const char *, int, int);
 void    ik_feat_free(ik_feat);
 char  * ik_feat_seq(const ik_feat);
 
+// simple mRNA (no CDS)
 struct ik_MRNA {
 	const char *seq;     // parent sequence, not copied
 	int         beg;     // 0-based, start of 5'UTR

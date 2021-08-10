@@ -6,14 +6,11 @@
 #ifndef IK_MODEL_H
 #define IK_MODEL_H
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
 #include "toolbox.h"
 
-// utilities
+// Utilities
 
-int dna2dec(const char *);
+int dna2dec(const char *, int, int);
 double prob2score(double);
 
 // Position Weight Matrix

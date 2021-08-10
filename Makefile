@@ -17,8 +17,6 @@ APP1 = ik-test
 SRC1 = ik-test.c
 OBJ1 = ik-test.o
 
-DATE = $(shell date +\%Y-\%m-\%d)
-
 ###########
 # Targets #
 ###########

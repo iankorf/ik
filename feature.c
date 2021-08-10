@@ -25,13 +25,13 @@ void ik_feat_free(ik_feat f) {
 
 char * ik_feat_seq(const ik_feat f) {
 	int len = f->end - f->beg + 1;
-	char *seq = malloc(sizeof(len)+1);
-	strncpy(seq, f->seq +f->beg, len);
-	seq[len] = '\0';
-	return seq;
+	char *ret = ik_malloc(len + 1);
+	strncpy(ret, f->seq+f->beg, len);
+	ret[len] = '\0';
+	return ret;
 }
 
-// transcripts
+// mRNA
 
 ik_mRNA ik_mRNA_new(const char *seq, int beg, int end,
 		const ik_ivec dons, const ik_ivec accs) {
@@ -42,14 +42,14 @@ ik_mRNA ik_mRNA_new(const char *seq, int beg, int end,
 	tx->end = end;
 	tx->exons = ik_vec_new();
 	tx->introns = ik_vec_new();
-		
+
 	assert(dons->size == accs->size);
-	
+
 	if (dons->size == 0) {
 		ik_vec_push(tx->exons, ik_feat_new(seq, beg, end));
 		return tx;
 	}
-	
+
 	// introns
 	for (int i = 0; i < dons->size; i++) {
 		int beg = dons->elem[i];
@@ -57,21 +57,19 @@ ik_mRNA ik_mRNA_new(const char *seq, int beg, int end,
 		ik_feat f = ik_feat_new(seq, beg, end);
 		ik_vec_push(tx->introns, f);
 	}
-	
+
 	// exons
-	//ik_feat ei = ik_feat_new(seq, 106, 144);
-	//ik_vec_push(tx->exons, ei);
-	//printf("attempting %d %d\n", beg, dons->elem[0]);
-	//ik_vec_push(tx->exons, ik_feat_new(seq, beg, dons->elem[0] -1));
-	/*
+	ik_feat ei = ik_feat_new(seq, beg, dons->elem[0] -1);
+	ik_vec_push(tx->exons, ei);
 	for (int i = 1; i < dons->size; i++) {
-		int beg = accs->elem[i-1] +1;
-		int end = dons->elem[i] -1;
-		ik_vec_push(tx->exons, ik_feat_new(seq, beg, end));
+		int a = accs->elem[i-1] +1;
+		int b = dons->elem[i] -1;
+		ik_feat ex = ik_feat_new(seq, a, b);
+		ik_vec_push(tx->exons, ex);
 	}
-	*/
-	//ik_vec_push(tx->exons, ik_feat_new(seq, accs->elem[accs->size] +1, end));
-	
+	ik_feat et = ik_feat_new(seq, accs->elem[accs->size -1] + 1, end);
+	ik_vec_push(tx->exons, et);
+
 	return tx;
 }
 

@@ -12,8 +12,8 @@
 #include <float.h>
 #include <math.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 // library and program info
@@ -23,13 +23,11 @@ char * ik_get_program_name(void);
 
 // specialized output
 void ik_exit(const char *, ...);
-void ik_output(FILE *, int, ...);
 
 // memory
 void * ik_malloc(size_t);
 void * ik_calloc(size_t, size_t);
 void * ik_realloc(void *, size_t);
-void   ik_free(void *);
 
 // integer vector
 struct ik_IVEC {
@@ -100,34 +98,6 @@ void *	ik_map_get(const ik_map, const char *);
 ik_tvec ik_map_keys(const ik_map);
 ik_vec	ik_map_vals(const ik_map);
 void	ik_map_stat(const ik_map);
-
-/*
-// integer map
-struct ik_IMAP {
-	ik_map	hash;
-	ik_ivec ivec;
-};
-typedef struct ik_IMAP * ik_imap;
-void	ik_imap_free(ik_imap);
-ik_imap ik_imap_new(void);
-void	ik_imap_set(ik_imap, const char *, int);
-int     ik_imap_get(const ik_imap, const char *);
-int     ik_imap_exists(const ik_imap, const char *);
-ik_tvec ik_imap_keys(const ik_imap);
-
-// float map
-struct ik_FMAP {
-	ik_map  hash;
-	ik_fvec fvec;
-};
-typedef struct ik_FMAP * ik_fmap;
-void    ik_fmap_free(ik_fmap);
-ik_fmap ik_fmap_new(void);
-void    ik_fmap_set(ik_fmap, const char *, float);
-float   ik_fmap_get(const ik_fmap, const char *);
-int     ik_fmap_exists(const ik_fmap, const char *);
-ik_tvec ik_fmap_keys(const ik_fmap);
-*/
 
 // text map
 struct ik_TMAP {

@@ -3,6 +3,9 @@
  Copyright (C) Ian Korf
 \******************************************************************************/
 
+#ifndef IK_TOOLBOX_C
+#define IK_TOOLBOX_C
+
 #include "toolbox.h"
 
 static char ik_version_number[] = "2021";
@@ -14,7 +17,7 @@ char * ik_get_program_name (void) {return ik_program_name;}
 
 void ik_exit(const char* format, ...) {
 	va_list args;
-	
+
 	fflush(stdout);
 	fprintf(stderr, "ERROR from program %s, libarary version %s\n",
 		ik_get_program_name(),
@@ -24,20 +27,6 @@ void ik_exit(const char* format, ...) {
 	va_end(args);
 	fprintf(stderr, "\n");
 	exit(1);
-}
-
-void ik_output(FILE *stream, int argc, ...) {
-	int i;
-	va_list ap;
-	char *s;
-	
-	va_start(ap, argc);
-	for (i = 0; i < argc; i++) {
-		s = va_arg(ap, char *);
-		fprintf(stream, "%s\n", s);
-	}
-	va_end(ap);
-	fflush(stream);
 }
 
 void * ik_malloc(size_t size) {
@@ -61,14 +50,11 @@ void * ik_realloc(void *p, size_t size) {
 	return mem;
 }
 
-void ik_free(void *p) {
-	free(p);
-}
 
 void ik_ivec_free(ik_ivec vec) {
 	if (vec == NULL) return;
-	if (vec->elem) ik_free(vec->elem);
-	ik_free(vec);
+	if (vec->elem) free(vec->elem);
+	free(vec);
 }
 
 ik_ivec ik_ivec_new(void) {
@@ -98,8 +84,8 @@ int ik_ivec_pop(ik_ivec vec) {
 
 void ik_fvec_free(ik_fvec vec) {
 	if (vec == NULL) return;
-	if (vec->elem) ik_free(vec->elem);
-	ik_free(vec);
+	if (vec->elem) free(vec->elem);
+	free(vec);
 }
 
 ik_fvec ik_fvec_new(void) {
@@ -129,13 +115,13 @@ float ik_fvec_pop(ik_fvec vec) {
 
 void ik_tvec_free(ik_tvec vec) {
 	int i;
-	
+
 	if (vec == NULL) return;
 	if (vec->elem) {
-		for (i = 0; i < vec->size; i++) ik_free(vec->elem[i]);
-		ik_free(vec->elem);
+		for (i = 0; i < vec->size; i++) free(vec->elem[i]);
+		free(vec->elem);
 	}
-	ik_free(vec);
+	free(vec);
 }
 
 ik_tvec ik_tvec_new(void) {
@@ -166,8 +152,8 @@ char * ik_tvec_pop(ik_tvec vec) {
 
 void ik_vec_free(ik_vec vec) {
 	if (vec == NULL) return;
-	if (vec->elem) ik_free(vec->elem);
-	ik_free(vec);
+	if (vec->elem) free(vec->elem);
+	free(vec);
 }
 
 ik_vec ik_vec_new(void) {
@@ -224,7 +210,7 @@ static void ExpandHash(ik_map hash) {
 	ik_vec	kvec;
 	ik_vec	vvec;
 	ik_tvec	keys;
-	
+
 	// create the new hash
 	hash->level = hash->level +1;
 	hash->slots = HashLevelToSlots(hash->level);
@@ -234,13 +220,13 @@ static void ExpandHash(ik_map hash) {
 		hash->key[i] = ik_vec_new();
 		hash->val[i] = ik_vec_new();
 	}
-	
+
 	// brand new hash?
 	if (hash->keys->size == 0) return;
-	
+
 	keys = hash->keys;
 	hash->keys = ik_tvec_new();
-	
+
 	// transfer old stuff to new hash
 	for (i = 0; i < oldslots; i++) {
 		kvec = oldkey[i];
@@ -251,7 +237,7 @@ static void ExpandHash(ik_map hash) {
 			ik_map_set(hash, key, val);
 		}
 	}
-			
+
 	// free old stuff
 	for (i = 0; i < oldslots; i++) {
 		kvec = oldkey[i];
@@ -259,25 +245,25 @@ static void ExpandHash(ik_map hash) {
 		ik_vec_free(kvec);
 		ik_vec_free(vvec);
 	}
-	ik_free(oldkey);
-	ik_free(oldval);
+	free(oldkey);
+	free(oldval);
 	ik_tvec_free(keys);
 }
 
 void ik_map_free(ik_map hash) {
 	int i;
-	
+
 	if (hash == NULL) return;
-		
+
 	for (i = 0; i < hash->slots; i++) {
 		if (hash->key[i]) ik_vec_free(hash->key[i]);
 		if (hash->val[i]) ik_vec_free(hash->val[i]);
 	}
 	ik_tvec_free(hash->keys);
 	ik_vec_free(hash->vals);
-	ik_free(hash->key);
-	ik_free(hash->val);
-	ik_free(hash);
+	free(hash->key);
+	free(hash->val);
+	free(hash);
 }
 
 ik_map ik_map_new(void) {
@@ -295,9 +281,9 @@ ik_map ik_map_new(void) {
 void * ik_map_get(const ik_map hash, const char *key) {
 	int	  i, index;
 	char *string = NULL;
-	
+
 	index = HashFunc(hash, key);
-	
+
 	// resolve collisions
 	for (i = 0; i < hash->key[index]->size; i++) {
 		string = hash->key[index]->elem[i];
@@ -312,9 +298,9 @@ void ik_map_set(ik_map hash, const char *key, void *val) {
 	int	  i, index;
 	char *string = NULL;
 	int	  new_key = 1;
-		
+
 	index = HashFunc(hash, key);
-	
+
 	// reassign unless new key
 	for (i = 0; i < hash->key[index]->size; i++) {
 		string = hash->key[index]->elem[i];
@@ -324,14 +310,14 @@ void ik_map_set(ik_map hash, const char *key, void *val) {
 			return;
 		}
 	}
-	
+
 	if (new_key) {
 		ik_tvec_push(hash->keys, key);
 		ik_vec_push(hash->key[index], hash->keys->last);
 		ik_vec_push(hash->vals, val);
 		ik_vec_push(hash->val[index], hash->vals->last);
 	}
-	
+
 	// check if we have to expand the hash
 	if ((float)hash->keys->size / (float)hash->slots >= MAX_HASH_DEPTH) {
 		ExpandHash(hash);
@@ -368,87 +354,12 @@ void ik_map_stat(const ik_map hash) {
 		 (float)total / (float)hash->slots);
 }
 
-/*
-// int map
-
-void ik_imap_free(ik_imap imap) {
-	ik_map_free(imap->hash);
-	ik_ivec_free(imap->ivec);
-	ik_free(imap);
-}
-
-ik_imap ik_imap_new(void) {
-	ik_imap imap = ik_malloc(sizeof(struct ik_IMAP));
-	imap->hash = ik_map_new();
-	imap->ivec = ik_ivec_new();
-	return imap;
-}
-
-void ik_imap_set(ik_imap imap, const char *key, int val) {
-	ik_ivec_push(imap->ivec, val);
-	ik_map_set(imap->hash, key, &imap->ivec->elem[imap->ivec->size -1]);
-}
-
-int ik_imap_get(const ik_imap imap, const char *key) {
-	int *ref = ik_map_get(imap->hash, key);
-	assert(ref != NULL);
-	return *ref;
-}
-
-int ik_imap_exists(const ik_imap imap, const char *key) {
-	void *ref = ik_map_get(imap->hash, key);
-	if (ref == NULL) return 0;
-	return 1;
-}
-
-ik_tvec ik_imap_keys(const ik_imap imap) {
-	return ik_map_keys(imap->hash);
-}
-
-// float map
-
-void ik_fmap_free(ik_fmap fmap) {
-	ik_map_free(fmap->hash);
-	ik_fvec_free(fmap->fvec);
-	ik_free(fmap);
-}
-
-ik_fmap ik_fmap_new(void) {
-	ik_fmap fmap = ik_malloc(sizeof(struct ik_FMAP));
-	fmap->hash = ik_map_new();
-	fmap->fvec = ik_fvec_new();
-	return fmap;
-}
-
-void ik_fmap_set(ik_fmap fmap, const char *key, float val) {
-	ik_fvec_push(fmap->fvec, val);
-	ik_map_set(fmap->hash, key, &fmap->fvec->elem[fmap->fvec->size -1]);
-}
-
-float ik_fmap_get(const ik_fmap fmap, const char *key) {
-	float *ref = ik_map_get(fmap->hash, key);
-	assert(ref != NULL);
-	return *ref;
-}
-
-int ik_fmap_exists(const ik_fmap fmap, const char *key) {
-	void *ref = ik_map_get(fmap->hash, key);
-	if (ref == NULL) return 0;
-	return 1;
-}
-
-ik_tvec ik_fmap_keys(const ik_fmap fmap) {
-	return ik_map_keys(fmap->hash);
-}
-
-*/
-
 // text map
 
 void ik_tmap_free(ik_tmap t) {
 	ik_map_free(t->hash);
 	ik_tvec_free(t->tvec);
-	ik_free(t);
+	free(t);
 }
 
 ik_tmap ik_tmap_new(void) {
@@ -491,7 +402,7 @@ void ik_register_option(const char *name, int flag) {
 		CL_REGISTER	 = ik_map_new();
 		CL_OPTIONS	 = ik_map_new();
 	}
-	
+
 	switch (flag) {
 		case 0: ik_map_set(CL_REGISTER, name, (void *)1); break;
 		case 1: ik_map_set(CL_REGISTER, name, (void *)2); break;
@@ -502,18 +413,18 @@ void ik_register_option(const char *name, int flag) {
 void ik_parse_options(int *argc, char **argv) {
 	int i;
 	char *token = NULL;
-	
+
 	for (i = 0; i < *argc; i++) {
 		token = argv[i];
 		if (token[0] == '-' && strlen(token) > 1) {
 			switch ((size_t)ik_map_get(CL_REGISTER, token)) {
-				case 0: 
-					ik_exit("unknown option (%s)", token); 
+				case 0:
+					ik_exit("unknown option (%s)", token);
 					break;
-				case 1: 
-					ik_map_set(CL_OPTIONS, token, token); 
+				case 1:
+					ik_map_set(CL_OPTIONS, token, token);
 					break;
-				case 2: 
+				case 2:
 					ik_map_set(CL_OPTIONS, token, argv[i+1]);
 					i++;
 					break;
@@ -524,7 +435,7 @@ void ik_parse_options(int *argc, char **argv) {
 			ik_tvec_push(COMMAND_LINE, argv[i]);
 		}
 	}
-	
+
 	*argc = COMMAND_LINE->size;
 	for (i = 0; i < COMMAND_LINE->size; i++) {
 		argv[i] = COMMAND_LINE->elem[i];
@@ -539,7 +450,7 @@ char * ik_option(const char *tag) {
 
 void ik_pipe_close(ik_pipe pipe) {
 	pipe->mode = 0;
-	ik_free(pipe->name);
+	free(pipe->name);
 	if (pipe->gzip) pclose(pipe->stream);
 	else			fclose(pipe->stream);
 	pipe->gzip = 0;
@@ -549,17 +460,17 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 	char	command[1024];
 	int     length = strlen(name);
 	ik_pipe pipe = ik_malloc(sizeof(struct ik_PIPE));
-	
+
 	if		(strcmp(mode, "r") == 0)  pipe->mode = 0;
 	else if (strcmp(mode, "w") == 0)  pipe->mode = 1;
 	else if (strcmp(mode, "r+") == 0) pipe->mode = 2;
 	else ik_exit("r, w, or r+ only in ik_pipe");
-   
+
 	pipe->name = ik_malloc(length + 1);
 	strcpy(pipe->name, name);
-	
+
 	pipe->gzip = 0;
-	
+
 	if (name[length -3] == '.' &&
 		name[length -2] == 'g' &&
 		name[length -1] == 'z') pipe->gzip = 1; // .gz
@@ -567,7 +478,7 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 		name[length -1] == 'z') pipe->gzip = 1; // .z
 	if (name[length -2] == '.' &&
 		name[length -1] == 'Z') pipe->gzip = 1; // .Z
-	
+
 	if (pipe->gzip) {
 		if (pipe->mode != 0) ik_exit("compressed pipes are read only");
 		sprintf(command, "gunzip -c %s", name);
@@ -576,10 +487,12 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 		if (strcmp(name, "-") == 0) pipe->stream = stdin;
 		else						pipe->stream = fopen(name, mode);
 	}
-	
+
 	if (pipe->stream == NULL) {
 		ik_exit("failed to open %s\n", name);
 	}
-				
+
 	return pipe;
 }
+
+#endif
