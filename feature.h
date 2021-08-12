@@ -8,24 +8,27 @@
 
 #include "toolbox.h"
 
-// simple features (no type, strand, group)
+// features
 struct ik_FEAT {
-	const char *seq; // parent sequence, not copied
-	int         beg; // 0-based
-	int         end; // 0-based
+	const char *seq;    // parent sequence
+	int         beg;    // 0-based
+	int         end;    // 0-based
+	double      score;  // defaults to 0, set manually
 };
 typedef struct ik_FEAT * ik_feat;
 ik_feat ik_feat_new(const char *, int, int);
 void    ik_feat_free(ik_feat);
 char  * ik_feat_seq(const ik_feat);
 
-// simple mRNA (no CDS)
+// mRNA
 struct ik_MRNA {
-	const char *seq;     // parent sequence, not copied
+	const char *seq;     // parent sequence
 	int         beg;     // 0-based, start of 5'UTR
 	int         end;     // 0-based, end at poly-A tail
 	ik_vec      exons;   // ik_feat
 	ik_vec      introns; // ik_feat
+	int         atg;     // CDS start, manually set, default -1
+	double      score;   // defaults to 0, set manually
 };
 typedef struct ik_MRNA * ik_mRNA;
 ik_mRNA ik_mRNA_new(const char*, int, int, const ik_ivec, const ik_ivec);

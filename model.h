@@ -35,6 +35,7 @@ struct ik_MM {
 typedef struct ik_MM * ik_mm;
 ik_mm  ik_read_mm(const char *);
 double ik_score_mm(const ik_mm, const char *, int, int);
+double * ik_mm_cache(const ik_mm, const char *);
 
 // Length model
 

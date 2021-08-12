@@ -16,6 +16,7 @@ ik_feat ik_feat_new(const char *seq, int beg, int end) {
 	f->seq    = seq;
 	f->beg    = beg;
 	f->end    = end;
+	f->score  = 0;
 	return f;
 }
 
@@ -37,11 +38,13 @@ ik_mRNA ik_mRNA_new(const char *seq, int beg, int end,
 		const ik_ivec dons, const ik_ivec accs) {
 	assert(beg <= end);
 	ik_mRNA tx = malloc(sizeof(struct ik_MRNA));
-	tx->seq = seq;
-	tx->beg = beg;
-	tx->end = end;
-	tx->exons = ik_vec_new();
+	tx->seq     = seq;
+	tx->beg     = beg;
+	tx->end     = end;
+	tx->exons   = ik_vec_new();
 	tx->introns = ik_vec_new();
+	tx->atg     = -1;
+	tx->score   = 0;
 
 	assert(dons->size == accs->size);
 

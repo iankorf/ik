@@ -25,8 +25,8 @@ int dna2dec(const char *seq, int off, int k) {
 }
 
 double prob2score(double p) {
-	if (p == 0) return -100; // should be flt min?
-	return log(p) / log(2);
+	if (p == 0) return -100; // umm...
+	return log(p/0.25) / log(2);
 }
 
 // PWM
@@ -77,7 +77,6 @@ double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
 			case 'C': case 'c': p += pwm->score[i][1]; break;
 			case 'G': case 'g': p += pwm->score[i][2]; break;
 			case 'T': case 't': p += pwm->score[i][3]; break;
-			default: p += -2; // 0.25 or should I throw error?
 		}
 	}
 	return p;
@@ -125,11 +124,23 @@ double ik_score_mm(const ik_mm mm, const char *seq, int pos, int end) {
 	if (pos < mm->k) pos = mm->k;
 	for (int i = pos; i <= end; i++) {
 		int idx = dna2dec(seq, i, mm->k);
-		if (idx == -1) p += -2; // 0.25 or error?
-		else           p += mm->score[idx];
+		if (idx != -1) p += mm->score[idx];
 	}
 
 	return p;
+}
+
+double * ik_mm_cache(const ik_mm mm, const char *seq) {
+	int len = strlen(seq);
+	double *score = malloc(sizeof(double) * len);
+	for (int i = 0; i < mm->size; i++) score[i] = 0;
+	for (int i = mm->size; i < len; i++) {
+		int idx = dna2dec(seq, i, mm->k);
+		if (idx == -1) score[i] = score[i-1];
+		else           score[i] = score[i-1] + mm->score[idx];
+	}
+
+	return score;
 }
 
 // Length model
@@ -169,7 +180,7 @@ ik_len ik_read_len(const char *filename) {
 			score = malloc(sizeof(double) * size);
 		} else if (sscanf(line, "%lf", &p) == 1) {
 			last = p;
-			score[idx] = prob2score(p);
+			score[idx] = log(p/(1/size)) / log(2);
 			idx++;
 		}
 	}
@@ -190,6 +201,7 @@ ik_len ik_read_len(const char *filename) {
 double ik_score_len(const ik_len len, int x) {
 	assert(x >= 0);
 	if (x >= len->size) {
+		ik_exit("not sure how to score long lengths");
 		double p = 1 / len->tail;
 		return pow(1-p, x-1) * p;
 	} else {
