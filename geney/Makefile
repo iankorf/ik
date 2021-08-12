@@ -3,8 +3,7 @@
 LIB = -lm -lik
 LINC = -L..
 INC = -I..
-CFLAGS = -O2
-OBJECTS =
+CFLAGS = -O2 -Wall -Werror
 
 APP = geney
 OBJ = geney.o
@@ -16,8 +15,10 @@ $(APP): $(OBJ) $(OBJECTS)
 	$(CC) -o $(APP) $(OBJ) $(OBJECTS) $(LINC) $(LIB)
 
 test: $(APP)
-	./$(APP) 777.fa 777.gff -dpwm donor.pwm -apwm acceptor.pwm \
-		-emm exon.mm -imm intron.mm -elen exon.len -ilen intron.len
+	./$(APP) 777.fa 777.gff \
+		-dpwm donor.pwm -apwm acceptor.pwm \
+		-emm exon.mm -imm intron.mm \
+		-elen exon.len -ilen intron.len
 
 clean:
 	rm -f *.o $(APP)
