@@ -13,40 +13,40 @@ OBJECTS = \
 
 ARC = libik.a
 
-APP1 = ik-test
-SRC1 = ik-test.c
-OBJ1 = ik-test.o
+APP = ik-test
+SRC = ik-test.c
+OBJ = ik-test.o
 
 ###########
 # Targets #
 ###########
 
 default:
-	make gcc
+	make $(ARC)
+	make $(APP)
 
 $(ARC): $(OBJECTS)
 	ar rvs $(ARC) $(OBJECTS)
 
-$(APP1): $(OBJ1) $(OBJECTS)
-	$(CC) -o $(APP1) $(OBJ1) $(OBJECTS) $(LIB)
+$(APP): $(OBJ) $(OBJECTS)
+	$(CC) -o $(APP) $(OBJ) $(OBJECTS) $(LIB)
 
 clean:
-	rm -f *.o $(APP1) $(APP2) $(ARC)
+	rm -f *.o $(APP) $(ARC)
+	cd dusty && make clean
+	cd smithy && make clean
+	cd geney && make clean
 
 depend: $(OBJECTS:.o=.c)
 	gcc -MM $^ > $@
 
-test: $(APP1)
+test: $(APP)
 	./ik-test -all
 
-
-#################
-# Architectures #
-#################
-
-gcc:
-	make $(ARC)
-	make $(APP1)
+all: $(ARC) $(APP)
+	cd dusty && make
+	cd smithy && make
+	cd geney && make
 
 ###################
 # Inference Rules #
@@ -60,4 +60,3 @@ gcc:
 ################
 
 include depend
-
