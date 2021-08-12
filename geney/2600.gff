@@ -1,0 +1,10 @@
+2600	WormBase	three_prime_UTR	100	119	.	-	.	Parent=Transcript:F52C6.6.1
+2600	WormBase	exon	100	330	.	-	.	Parent=Transcript:F52C6.6.1
+2600	WormBase	gene	100	491	.	-	.	ID=Gene:WBGene00018663
+2600	WormBase	mRNA	100	491	.	-	.	ID=Transcript:F52C6.6.1;Parent=Gene:WBGene00018663
+2600	WormBase	CDS	120	330	.	-	.	ID=CDS:F52C6.6;Parent=Transcript:F52C6.6.1
+2600	WormBase	intron	331	378	.	-	.	Parent=Transcript:F52C6.6.1
+2600	RNASeq_splice	intron	331	378	1582.0	-	.	
+2600	WormBase	CDS	379	485	.	-	.	ID=CDS:F52C6.6;Parent=Transcript:F52C6.6.1
+2600	WormBase	exon	379	491	.	-	.	Parent=Transcript:F52C6.6.1
+2600	WormBase	five_prime_UTR	486	491	.	-	.	Parent=Transcript:F52C6.6.1
