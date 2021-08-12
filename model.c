@@ -31,7 +31,7 @@ double prob2score(double p) {
 
 // PWM
 
-ik_pwm ik_read_pwm(const char *filename) {
+ik_pwm ik_pwm_read(const char *filename) {
 	char    *line = NULL;
 	size_t   len = 0;
 	ssize_t  read;
@@ -69,7 +69,7 @@ ik_pwm ik_read_pwm(const char *filename) {
 	return model;
 }
 
-double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
+double ik_pwm_score(const ik_pwm pwm, const char *seq, int pos) {
 	double p = 0;
 	for (int i = 0; i < pwm->size; i++) {
 		switch (seq[i+pos]) {
@@ -84,7 +84,7 @@ double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
 
 // Markov model
 
-ik_mm ik_read_mm(const char *filename) {
+ik_mm ik_mm_read(const char *filename) {
 	char    *line = NULL;
 	size_t   len = 0;
 	ssize_t  read;
@@ -118,7 +118,7 @@ ik_mm ik_read_mm(const char *filename) {
 	return model;
 }
 
-double ik_score_mm(const ik_mm mm, const char *seq, int pos, int end) {
+double ik_mm_score(const ik_mm mm, const char *seq, int pos, int end) {
 	double p = 0;
 
 	if (pos < mm->k) pos = mm->k;
@@ -162,7 +162,7 @@ static double find_tail(double val, int x) {
 	return m;
 }
 
-ik_len ik_read_len(const char *filename) {
+ik_len ik_len_read(const char *filename) {
 	char   *line = NULL;
 	size_t  len = 0;
 	ssize_t read;
@@ -198,7 +198,7 @@ ik_len ik_read_len(const char *filename) {
 	return model;
 }
 
-double ik_score_len(const ik_len len, int x) {
+double ik_len_score(const ik_len len, int x) {
 	assert(x >= 0);
 	if (x >= len->size) {
 		ik_exit("not sure how to score long lengths");

@@ -31,7 +31,8 @@ struct ik_MRNA {
 	double      score;   // defaults to 0, set manually
 };
 typedef struct ik_MRNA * ik_mRNA;
-ik_mRNA ik_mRNA_new(const char*, int, int, const ik_ivec, const ik_ivec);
+ik_mRNA ik_mRNA_new(const char *, int, int, const ik_ivec, const ik_ivec);
+ik_mRNA ik_mRNA_read(const char *, const char *);
 void    ik_mRNA_free(ik_mRNA);
 char  * ik_mRNA_seq(const ik_mRNA);
 

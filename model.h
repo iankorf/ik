@@ -21,8 +21,8 @@ struct ik_PWM {
 	double **score;  // score[pos][nt]
 };
 typedef struct ik_PWM * ik_pwm;
-ik_pwm ik_read_pwm(const char *);
-double ik_score_pwm(const ik_pwm, const char *, int);
+ik_pwm ik_pwm_read(const char *);
+double ik_pwm_score(const ik_pwm, const char *, int);
 
 // Markov model
 
@@ -33,8 +33,8 @@ struct ik_MM {
 	double *score;  // score[dna2dec()] = value
 };
 typedef struct ik_MM * ik_mm;
-ik_mm  ik_read_mm(const char *);
-double ik_score_mm(const ik_mm, const char *, int, int);
+ik_mm  ik_mm_read(const char *);
+double ik_mm_score(const ik_mm, const char *, int, int);
 double * ik_mm_cache(const ik_mm, const char *);
 
 // Length model
@@ -46,7 +46,7 @@ struct ik_LEN {
 	double  tail;   // mean of geometric tail
 };
 typedef struct ik_LEN * ik_len;
-ik_len ik_read_len(const char *);
-double ik_score_len(const ik_len, int);
+ik_len ik_len_read(const char *);
+double ik_len_score(const ik_len, int);
 
 #endif
