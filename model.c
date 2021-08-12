@@ -171,6 +171,7 @@ ik_len ik_len_read(const char *filename) {
 	double  p;
 	int     idx = 0;
 	int     size;
+	double  expect;
 	double  last = 0;
 	char    blah[64];
 
@@ -178,9 +179,10 @@ ik_len ik_len_read(const char *filename) {
 		if (line[0] == '#') {
 			assert(sscanf(line, "# LEN %s %d", blah, &size) == 2);
 			score = malloc(sizeof(double) * size);
+			expect = (double) 1 / size;
 		} else if (sscanf(line, "%lf", &p) == 1) {
 			last = p;
-			score[idx] = log(p/(1/size)) / log(2);
+			score[idx] = log(p / expect) / log(2);
 			idx++;
 		}
 	}
