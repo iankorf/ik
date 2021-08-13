@@ -40,13 +40,14 @@ double * ik_mm_cache(const ik_mm, const char *);
 // Length model
 
 struct ik_LEN {
-	char   *name;   // exon, intron
-	int     size;   // defined region
-	double *score;  // the values for defined region
+	char   *name;   // exon, intron, actually unused
+	int     size;   // length of defined region
+	int     limit;  // maximum length for scoring
+	double *score;  // values for the defined region
 	double  tail;   // mean of geometric tail
 };
 typedef struct ik_LEN * ik_len;
-ik_len ik_len_read(const char *);
+ik_len ik_len_read(const char *, int);
 double ik_len_score(const ik_len, int);
 
 #endif

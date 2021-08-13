@@ -162,7 +162,7 @@ static double find_tail(double val, int x) {
 	return m;
 }
 
-ik_len ik_len_read(const char *filename) {
+ik_len ik_len_read(const char *filename, int limit) {
 	char   *line = NULL;
 	size_t  len = 0;
 	ssize_t read;
@@ -171,31 +171,36 @@ ik_len ik_len_read(const char *filename) {
 	double  p;
 	int     idx = 0;
 	int     size;
-	double  expect = 0;
-	double  last = 0;
 	char    blah[64];
 
+	// read probabilities
 	while ((read = getline(&line, &len, io->stream)) != -1) {
 		if (line[0] == '#') {
 			assert(sscanf(line, "# LEN %s %d", blah, &size) == 2);
 			score = malloc(sizeof(double) * size);
-			expect = (double) 1 / size;
+			
 		} else if (sscanf(line, "%lf", &p) == 1) {
-			last = p;
-			score[idx] = log(p / expect) / log(2);
+			score[idx] = p;
 			idx++;
 		}
 	}
 
 	ik_pipe_close(io);
 	if (line) free(line);
-
+	
 	ik_len model = malloc(sizeof(struct ik_LEN));
 	model->name = malloc(strlen(filename)+1);
 	strcpy(model->name, filename);
 	model->score = score;
 	model->size = size;
-	model->tail = find_tail(last, size);
+	model->limit = limit;
+	model->tail = find_tail(score[size-1], size);
+	
+	// convert probabilities to scores
+	for (int i = 0; i < size; i++) {
+		double expect = (double) 1 / limit;
+		score[i] = log(score[i]/expect) / log(2);
+	}
 
 	return model;
 }
@@ -203,9 +208,11 @@ ik_len ik_len_read(const char *filename) {
 double ik_len_score(const ik_len len, int x) {
 	assert(x >= 0);
 	if (x >= len->size) {
-		ik_exit("not sure how to score long lengths");
 		double p = 1 / len->tail;
-		return pow(1-p, x-1) * p;
+		double q = pow(1-p, x-1) * p;
+		double expect = (double)1 / len->limit;
+		double s = log(q/expect) / log(2);
+		return s;
 	} else {
 		return len->score[x];
 	}

@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
 	if (ik_option("-apwm")) apwm = ik_pwm_read(ik_option("-apwm"));
 	if (ik_option("-emm"))  emm  = ik_mm_read(ik_option("-emm"));
 	if (ik_option("-imm"))  imm  = ik_mm_read(ik_option("-imm"));
-	if (ik_option("-elen")) elen = ik_len_read(ik_option("-elen"));
-	if (ik_option("-ilen")) ilen = ik_len_read(ik_option("-ilen"));
+	if (ik_option("-elen")) elen = ik_len_read(ik_option("-elen"), 1000);
+	if (ik_option("-ilen")) ilen = ik_len_read(ik_option("-ilen"), 1000);
 
 	// construct mRNA
 	ik_pipe  io = ik_pipe_open(ffile, "r");
