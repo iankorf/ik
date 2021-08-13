@@ -171,7 +171,7 @@ ik_len ik_len_read(const char *filename) {
 	double  p;
 	int     idx = 0;
 	int     size;
-	double  expect;
+	double  expect = 0;
 	double  last = 0;
 	char    blah[64];
 
