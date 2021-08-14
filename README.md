@@ -20,6 +20,9 @@ protein sequences do not have their own data types: they are just strings.
 	+ Markov models (more like kmers)
 	+ Length models
 + Feature
+	+ GFF files
+	+ Features
+	+ mRNAs
 
 ## Demo Programs ##
 
@@ -27,3 +30,12 @@ There are a few programs included to demonstrate how to use the library.
 
 + dusty - complexity filter
 + smithy - pairwise alignment
++ geney - sequence features
+
+## To Do ##
+
+ik-test needs more tests
+
++ fasta
++ gff
++ mRNA

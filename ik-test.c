@@ -5,20 +5,22 @@
 #include "model.h"
 #include "feature.h"
 
-static int ITERATIONS = 9999;
-void test_ivec(void);
-void test_fvec(void);
-void test_tvec(void);
-void test_vec(void);
-void test_tmap(void);
-void test_map(void);
-void test_feat(void);
-void test_mRNA(void);
+static int ITERATIONS = 100;
+void test_vec();
+void test_ivec(int);
+void test_fvec(int);
+void test_tvec(int);
+void test_vec(int);
+void test_tmap(int);
+void test_map(int);
+void test_feat(int);
+void test_mRNA(int);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
 options:\n\
   -all\n\
+  -vec\n\
   -ivec\n\
   -fvec\n\
   -tvec\n\
@@ -26,7 +28,7 @@ options:\n\
   -map\n\
   -feat\n\
   -mRNA\n]\
-  -iterate <int> [9999]\n\
+  -iterate <int> [100]\n\
 ";
 
 int main(int argc, char ** argv) {
@@ -40,6 +42,7 @@ int main(int argc, char ** argv) {
 	/* options */
 	ik_set_program_name(argv[0]);
 	ik_register_option("-iterate", 1);
+	ik_register_option("-vec", 0);
 	ik_register_option("-ivec", 0);
 	ik_register_option("-fvec", 0);
 	ik_register_option("-tvec", 0);
@@ -53,128 +56,161 @@ int main(int argc, char ** argv) {
 
 	/* control */
 	if (ik_option("-iterate")) ITERATIONS = atoi(ik_option("-iterate"));
-	if (ik_option("-ivec")) test_ivec();
-	if (ik_option("-fvec")) test_fvec();
-	if (ik_option("-tvec")) test_tvec();
-	if (ik_option("-tmap")) test_tmap();
-	if (ik_option("-map"))	test_map();
-	if (ik_option("-feat")) test_feat();
-	if (ik_option("-mRNA")) test_mRNA();
+	int update = (int)((double)ITERATIONS/50);
+	if (update < 2) update = 2;
+	
+	if (ik_option("-vec"))  test_vec(update);
+	if (ik_option("-ivec")) test_ivec(update);
+	if (ik_option("-fvec")) test_fvec(update);
+	if (ik_option("-tvec")) test_tvec(update);
+	if (ik_option("-tmap")) test_tmap(update);
+	if (ik_option("-map"))	test_map(update);
+	if (ik_option("-feat")) test_feat(update);
+	if (ik_option("-mRNA")) test_mRNA(update);
 	if (ik_option("-all")) {
-		test_ivec();
-		test_fvec();
-		test_tvec();
-		test_map();
-		test_tmap();
-		test_feat();
-		test_mRNA();
+		test_vec(update);
+		test_ivec(update);
+		test_fvec(update);
+		test_tvec(update);
+		test_map(update);
+		test_tmap(update);
+		test_feat(update);
+		test_mRNA(update);
 	}
 
 	return 0;
 }
 
-void test_ivec(void) {
-	int i, j;
-	ik_ivec vec;
+void test_vec(int update) {
+	printf("vec ");
+	for (int i = 0; i < ITERATIONS; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		ik_vec vec = ik_vec_new();
+		for (int j = 0; j < 99999; j++) {
+			ik_vec_push(vec, NULL);
+		}
+		for (int j = 0; j < 99999; j++) {
+			if (vec->elem[j] != NULL) ik_exit("ivec elem failure");
+		}
+		for (int j = 99998; j >= 0; j--) {
+			void *v = ik_vec_pop(vec);
+			if (v != NULL) ik_exit("ivec pop failure");
+		}
+		ik_vec_free(vec);
 
-	for (i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "ivec: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
-		vec = ik_ivec_new();
-		for (j = 0; j < 99999; j++) {
+	}
+	printf(" done \n");
+}
+
+void test_ivec(int update) {
+	printf("ivec ");
+	for (int i = 0; i < ITERATIONS; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		ik_ivec vec = ik_ivec_new();
+		for (int j = 0; j < 99999; j++) {
 			ik_ivec_push(vec, j);
 		}
-		for (j = 0; j < 99999; j++) {
+		for (int j = 0; j < 99999; j++) {
 			if (vec->elem[j] != j) ik_exit("ivec elem failure");
 		}
-		for (j = 99998; j >= 0; j--) {
+		for (int j = 99998; j >= 0; j--) {
 			int v = ik_ivec_pop(vec);
 			if (v != j) ik_exit("ivec pop failure");
 		}
 		ik_ivec_free(vec);
 
 	}
-	fprintf(stderr, "\n");
+	printf(" done \n");
 }
 
-void test_fvec(void) {
-	int i, j;
-	ik_fvec vec;
+void test_fvec(int update) {
+	printf("fvec ");
 
-	for (i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "fvec: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
-		vec = ik_fvec_new();
-		for (j = 0; j < 99999; j++) {
+	for (int i = 0; i < ITERATIONS; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		ik_fvec vec = ik_fvec_new();
+		for (int j = 0; j < 99999; j++) {
 			ik_fvec_push(vec, j);
 		}
-		for (j = 0; j < 99999; j++) {
+		for (int j = 0; j < 99999; j++) {
 			if (vec->elem[j] != j) ik_exit("ivec elem failure");
 		}
-		for (j = 99998; j >= 0; j--) {
+		for (int j = 99998; j >= 0; j--) {
 			int v = ik_fvec_pop(vec);
 			if (v != j) ik_exit("ivec pop failure");
 		}
 		ik_fvec_free(vec);
 
 	}
-	fprintf(stderr, "\n");
+	printf(" done\n");
 }
 
-void test_tvec(void) {
-	int i, j;
-	ik_tvec tvec;
+void test_tvec(int update) {
 	char text[16];
-
 	sprintf(text, "hello world");
-	for (i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "tvec: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
-		tvec = ik_tvec_new();
-		for (j = 0; j < 9999; j++) {
+	
+	printf("tvec ");
+	for (int i = 0; i < ITERATIONS; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		ik_tvec tvec = ik_tvec_new();
+		for (int j = 0; j < 9999; j++) {
 			ik_tvec_push(tvec, text);
 		}
-		for (j = 0; j < 9999; j++) {
+		for (int j = 0; j < 9999; j++) {
 			if (strcmp(tvec->elem[j], text) != 0) ik_exit("tvec elem failure");
 		}
-		for (j = 9998; j >= 0; j--) {
+		for (int j = 9998; j >= 0; j--) {
 			char  *v = ik_tvec_pop(tvec);
 			if (strcmp(v, text) != 0) ik_exit("tvec pop failure");
 			free(v);
 		}
 		ik_tvec_free(tvec);
 	}
-	fprintf(stderr, "\n");
+	printf(" done\n");
 }
 
-void test_map(void) {
-	int i, j;
-	ik_map map;
-	char text[64];
-
-	for (i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "map: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
-		map = ik_map_new();
-		for (j = 0; j < 999; j++) {
+void test_map(int update) {
+	char text[32];
+	
+	printf("map ");
+	for (int i = 0; i < ITERATIONS; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		ik_map map = ik_map_new();
+		for (int j = 0; j < 999; j++) {
 			sprintf(text, "key %d", j);
 			ik_map_set(map, text, text);
 		}
 		ik_map_free(map);
 	}
-	fprintf(stderr, "\n");
+	printf(" done\n");
 }
 
-void test_tmap(void) {
-	int i, j;
-	ik_tmap tmap;
-	char text[64];
+void test_tmap(int update) {
+	char text[32];
 
-	for (i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "tmap: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
-		tmap = ik_tmap_new();
-		for (j = 0; j < 555; j++) {
+	printf("tmap ");
+	for (int i = 0; i < ITERATIONS; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		ik_tmap tmap = ik_tmap_new();
+		for (int j = 0; j < 555; j++) {
 			sprintf(text, "key %d", j);
 			ik_tmap_set(tmap, text, text);
 		}
@@ -190,14 +226,17 @@ void test_tmap(void) {
 		ik_tvec_free(keys);
 		ik_tmap_free(tmap);
 	}
-	fprintf(stderr, "\n");
+	printf(" done\n");
 }
 
-void test_feat(void) {
+void test_feat(int update) {
 	char *seq = "NNNNNAAAAAGTAAGTTTTTTTTCAGAAAAANNNNN";
+	printf("feat ");
 	for (int i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "feat: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
 		for (int j = 0; j < 9999; j++) {
 			ik_feat f = ik_feat_new(seq, 10, 25);
 			char *s = ik_feat_seq(f);
@@ -206,10 +245,11 @@ void test_feat(void) {
 			ik_feat_free(f);
 		}
 	}
-	fprintf(stderr, "\n");
+	printf(" done\n");
 }
 
-void test_mRNA(void) {
+void test_mRNA(int update) {
+/*
 	char *seq = "NNNNNAAAAAGTAAGTTTTTTTTCAGAAAAANNNNN";
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
@@ -236,4 +276,5 @@ void test_mRNA(void) {
 		}
 	}
 	fprintf(stderr, "\n");
+*/
 }
