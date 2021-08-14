@@ -9,20 +9,25 @@ protein sequences do not have their own data types: they are just strings.
 
 + Toolbox
 	+ Dynamic arrays
-	+ Maps (hashes)
+	+ Maps (diconary, hash)
 	+ Error output
-	+ Command line
+	+ Command line parsing
 + Sequence
 	+ FASTA files
 	+ Utility functions
+		+ revcomp
+		+ translate
 + Model
 	+ Position weight matrices
 	+ Markov models (more like kmers)
-	+ Length models
+	+ Length models (defined region, geometric tail)
 + Feature
 	+ GFF files
-	+ Features
+	+ GFF features
+	+ Simple features
 	+ mRNAs
+	+ Utilities
+		+ revcomp everything
 
 ## Demo Programs ##
 
@@ -34,8 +39,10 @@ There are a few programs included to demonstrate how to use the library.
 
 ## To Do ##
 
-ik-test needs more tests
-
-+ fasta
-+ gff
-+ mRNA
++ all code needs _modernization_ checks
++ ik-test needs more tests
+	+ mRNA
+	+ utilities
++ smithy needs work
++ translate function
++ translate mRNA

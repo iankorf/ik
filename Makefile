@@ -40,8 +40,8 @@ clean:
 depend: $(OBJECTS:.o=.c)
 	gcc -MM $^ > $@
 
-test: $(APP)
-	./ik-test -all
+test: $(APP) $(ARC)
+	./ik-test -vec -ivec -fvec -tvec -map -tmap
 
 all: $(ARC) $(APP)
 	cd dusty && make

@@ -10,24 +10,51 @@
 #include "feature.h"
 
 // gff
-/*
-struct ik_GFF {
-	char  *name;    // chromosome or sequence name
-	char  *source;  // whatever (ik for stuff here?)
-	char  *type;    // should be SO compliant but... 
-	char  *group;   // possibly not used
-	int    beg;     // 0-based internally
-	int    end;     // 0-based internally
-	double score;   // . or double
-	char   strand;  // {.+-}
-	char   phase;   // {.012}
-};
-*/
 
-ik_vec ik_gff_read(const char *filename) {
-	ik_vec fv = ik_vec_new();
-	//ik_gff gff = ik_gff_new();
-	return fv;
+ik_gff ik_gff_read(FILE *stream) {
+	char    *line = NULL;
+	size_t   len = 0;
+	ssize_t  read;
+	char sid[32];
+	char src[32];
+	char typ[32];
+	int  beg;
+	int  end;
+	char sco[16];
+	char str;
+	char pha;
+	char grp[1024];
+	
+	while ((read = getline(&line, &len, stream)) != -1) {
+		int groupon = 0;
+		if (line[0] == '#') continue;
+		if (sscanf(line, "%s %s %s %d %d %s %s %s %s", sid, src, typ,
+			&beg, &end, sco, &str, &pha, grp) == 9) {
+			groupon = 1;
+		} else if (sscanf(line, "%s %s %s %d %d %s %s %s", sid, src, typ,
+			&beg, &end, sco, &str, &pha) == 8) {
+		} else {
+			ik_exit("gff not parsed correctly\n %s", line);
+		}
+		
+		ik_gff gff = ik_gff_new();
+		gff->beg = beg -1;
+		gff->end = end -1;
+		gff->name   = malloc(strlen(sid) +1); strcpy(gff->name,   sid);
+		gff->source = malloc(strlen(src) +1); strcpy(gff->source, src);
+		gff->type   = malloc(strlen(typ) +1); strcpy(gff->type,   typ);
+		if (groupon) {
+			gff->group = malloc(strlen(grp) +1);
+			strcpy(gff->group, grp);
+		}
+		if (strcmp(".", sco) != 0) gff->score = atof(sco);
+		
+		if (line) free(line);
+		return gff;
+	}
+	
+	if (line) free(line);
+	return NULL;
 }
 
 ik_gff ik_gff_new(void) {
@@ -49,6 +76,7 @@ void ik_gff_free(ik_gff gff) {
 	if (gff->source) free(gff->source);
 	if (gff->type)   free(gff->type);
 	if (gff->group)  free(gff->group);
+	free(gff);
 }
 
 // features

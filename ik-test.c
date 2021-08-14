@@ -5,7 +5,7 @@
 #include "model.h"
 #include "feature.h"
 
-static int ITERATIONS = 100;
+static int COUNT = 100;
 void test_vec();
 void test_ivec(int);
 void test_fvec(int);
@@ -14,12 +14,13 @@ void test_vec(int);
 void test_tmap(int);
 void test_map(int);
 void test_feat(int);
-void test_mRNA(int);
+void test_pipe(int, const char *);
+void test_fasta(int, const char *);
+void test_gff(int, const char *);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
 options:\n\
-  -all\n\
   -vec\n\
   -ivec\n\
   -fvec\n\
@@ -27,8 +28,10 @@ options:\n\
   -tmap\n\
   -map\n\
   -feat\n\
-  -mRNA\n]\
-  -iterate <int> [100]\n\
+  -pipe  <file>\n\
+  -fasta <file>\n\
+  -gff   <file>\n\
+  -count <int> [100]\n\
 ";
 
 int main(int argc, char ** argv) {
@@ -41,49 +44,42 @@ int main(int argc, char ** argv) {
 
 	/* options */
 	ik_set_program_name(argv[0]);
-	ik_register_option("-iterate", 1);
-	ik_register_option("-vec", 0);
-	ik_register_option("-ivec", 0);
-	ik_register_option("-fvec", 0);
-	ik_register_option("-tvec", 0);
-	ik_register_option("-vec", 0);
-	ik_register_option("-tmap", 0);
-	ik_register_option("-map", 0);
-	ik_register_option("-feat", 0);
-	ik_register_option("-mRNA", 0);
-	ik_register_option("-all", 0);
+	ik_register_option("-count", 1);
+	ik_register_option("-vec",   0);
+	ik_register_option("-ivec",  0);
+	ik_register_option("-fvec",  0);
+	ik_register_option("-tvec",  0);
+	ik_register_option("-vec",   0);
+	ik_register_option("-tmap",  0);
+	ik_register_option("-map",   0);
+	ik_register_option("-feat",  0);
+	ik_register_option("-pipe",  1);
+	ik_register_option("-fasta", 1);
+	ik_register_option("-gff",   1);
 	ik_parse_options(&argc, argv);
 
 	/* control */
-	if (ik_option("-iterate")) ITERATIONS = atoi(ik_option("-iterate"));
-	int update = (int)((double)ITERATIONS/50);
+	if (ik_option("-count")) COUNT = atoi(ik_option("-count"));
+	int update = (int)((double)COUNT/50);
 	if (update < 2) update = 2;
 	
-	if (ik_option("-vec"))  test_vec(update);
-	if (ik_option("-ivec")) test_ivec(update);
-	if (ik_option("-fvec")) test_fvec(update);
-	if (ik_option("-tvec")) test_tvec(update);
-	if (ik_option("-tmap")) test_tmap(update);
-	if (ik_option("-map"))	test_map(update);
-	if (ik_option("-feat")) test_feat(update);
-	if (ik_option("-mRNA")) test_mRNA(update);
-	if (ik_option("-all")) {
-		test_vec(update);
-		test_ivec(update);
-		test_fvec(update);
-		test_tvec(update);
-		test_map(update);
-		test_tmap(update);
-		test_feat(update);
-		test_mRNA(update);
-	}
+	if (ik_option("-vec"))   test_vec(update);
+	if (ik_option("-ivec"))  test_ivec(update);
+	if (ik_option("-fvec"))  test_fvec(update);
+	if (ik_option("-tvec"))  test_tvec(update);
+	if (ik_option("-tmap"))  test_tmap(update);
+	if (ik_option("-map"))	 test_map(update);
+	if (ik_option("-feat"))  test_feat(update);
+	if (ik_option("-pipe"))  test_pipe(update, ik_option("-pipe"));
+	if (ik_option("-fasta")) test_fasta(update, ik_option("-fasta"));
+	if (ik_option("-gff"))   test_gff(update, ik_option("-gff"));
 
 	return 0;
 }
 
 void test_vec(int update) {
 	printf("vec ");
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -107,7 +103,7 @@ void test_vec(int update) {
 
 void test_ivec(int update) {
 	printf("ivec ");
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -132,7 +128,7 @@ void test_ivec(int update) {
 void test_fvec(int update) {
 	printf("fvec ");
 
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -159,7 +155,7 @@ void test_tvec(int update) {
 	sprintf(text, "hello world");
 	
 	printf("tvec ");
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -185,7 +181,7 @@ void test_map(int update) {
 	char text[32];
 	
 	printf("map ");
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -204,7 +200,7 @@ void test_tmap(int update) {
 	char text[32];
 
 	printf("tmap ");
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -232,7 +228,7 @@ void test_tmap(int update) {
 void test_feat(int update) {
 	char *seq = "NNNNNAAAAAGTAAGTTTTTTTTCAGAAAAANNNNN";
 	printf("feat ");
-	for (int i = 0; i < ITERATIONS; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
@@ -248,33 +244,58 @@ void test_feat(int update) {
 	printf(" done\n");
 }
 
-void test_mRNA(int update) {
-/*
-	char *seq = "NNNNNAAAAAGTAAGTTTTTTTTCAGAAAAANNNNN";
-	ik_ivec dons = ik_ivec_new();
-	ik_ivec accs = ik_ivec_new();
-	ik_ivec_push(dons, 10);
-	ik_ivec_push(accs, 25);
-	for (int i = 0; i < ITERATIONS; i++) {
-		if (i % 100 == 0) fprintf(stderr, "mRNA: %d\r",
-			(int) (100 * (float)i/ITERATIONS));
-		for (int j = 0; j < 2222; j++) {
-			ik_mRNA tx = ik_mRNA_new(seq, 5, 30, dons, accs);
-			for (int j = 0; j < tx->introns->size; j++) {
-				ik_feat intron = tx->introns->elem[j];
-				char *s = ik_feat_seq(intron);
-				if (strcmp(s, "GTAAGTTTTTTTTCAG") != 0) ik_exit("bad");
-				free(s);
-			}
-			for (int j = 0; j < tx->exons->size; j++) {
-				ik_feat exon = tx->exons->elem[j];
-				char *s = ik_feat_seq(exon);
-				if (strcmp(s, "AAAAA") != 0) ik_exit("bad");
-				free(s);
-			}
-			ik_mRNA_free(tx);
+void test_pipe(int update, const char *filename) {
+	printf("pipe ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		
+		for (int j = 0; j < 100; j ++) {
+			ik_pipe io = ik_pipe_open(filename, "r");
+			ik_pipe_close(io);
 		}
 	}
-	fprintf(stderr, "\n");
-*/
+	printf(" done\n");
+}
+
+void test_fasta(int update, const char *filename) {
+	ik_fasta in;
+	printf("fasta ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		
+		for (int j = 0; j < 100; j ++) {
+			ik_pipe io = ik_pipe_open(filename, "r");
+			while ((in = ik_fasta_read(io->stream)) != NULL) {
+				ik_fasta_free(in);
+			}
+			ik_pipe_close(io);
+		}
+	}
+	printf(" done\n");
+}
+
+void test_gff(int update, const char *filename) {
+	ik_gff gff;
+	printf("gff ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		
+		for (int j = 0; j < 100; j ++) {
+			ik_pipe io = ik_pipe_open(filename, "r");
+			while ((gff = ik_gff_read(io->stream)) != NULL) {
+				ik_gff_free(gff);
+			}
+			ik_pipe_close(io);
+		}
+	}
+	printf(" done\n");
 }

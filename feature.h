@@ -21,7 +21,7 @@ struct ik_GFF {
 	char   phase;   // {.012}
 };
 typedef struct ik_GFF * ik_gff;
-ik_vec ik_gff_read(const char *);
+ik_gff ik_gff_read(FILE *);
 ik_gff ik_gff_new(void);
 void   ik_gff_free(ik_gff);
 

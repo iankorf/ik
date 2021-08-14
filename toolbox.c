@@ -454,6 +454,7 @@ void ik_pipe_close(ik_pipe pipe) {
 	if (pipe->gzip) pclose(pipe->stream);
 	else			fclose(pipe->stream);
 	pipe->gzip = 0;
+	free(pipe);
 }
 
 ik_pipe ik_pipe_open(const char *name, const char *mode) {
