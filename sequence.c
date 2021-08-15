@@ -11,11 +11,8 @@
 // Utilities
 
 char * ik_revcomp (const char *seq) {
-	char *str;
-	int  length;
-
-	length = strlen(seq);
-	str = ik_malloc(length +1);
+	int length = strlen(seq);
+	char *str = ik_malloc(length +1);
 	str[strlen(seq)] = '\0';
 
 	for (int i = 1; i <= length; i++) {
@@ -76,22 +73,17 @@ ik_fasta ik_fasta_new (const char *def, const char *seq) {
 }
 
 ik_fasta ik_fasta_read(FILE *stream) {
-	char	 c;
-	int      i;
-	size_t	 size;
-	char    *seq;
-	char    *def;
-	ik_fasta ff;
-
-	c = fgetc(stream);
+	
+	// check for fasta header
+	char c = fgetc(stream);
 	if (c == EOF) return NULL;
 	if (c != '>') ik_exit("ik_fasta: doesn't look like a fasta file");
 	ungetc(c, stream);
 
 	// def
-	size = 256;
-	i = 0;
-	def = ik_malloc(size * sizeof(char));
+	size_t size = 256;
+	int i = 0;
+	char *def = ik_malloc(size * sizeof(char));
 	while ((c = fgetc(stream)) != EOF) {
 		if (c == '\n') break;
 		def[i] = c;
@@ -106,7 +98,7 @@ ik_fasta ik_fasta_read(FILE *stream) {
 	// seq
 	size = 65536;
 	i = 0;
-	seq = ik_malloc(size * sizeof(char));
+	char *seq = ik_malloc(size * sizeof(char));
 
 	while ((c = fgetc(stream)) != EOF) {
 		if (c == '>') {
@@ -123,7 +115,7 @@ ik_fasta ik_fasta_read(FILE *stream) {
 	}
 	seq[i] = '\0';
 
-	ff = ik_fasta_new(def+1, seq);
+	ik_fasta ff = ik_fasta_new(def+1, seq);
 	free(def);
 	free(seq);
 	return ff;
@@ -132,13 +124,11 @@ ik_fasta ik_fasta_read(FILE *stream) {
 static int FASTA_LINE_LENGTH = 50;
 
 void ik_fasta_write(FILE *stream, const ik_fasta ff) {
-	int i;
-
 	if (ff->def[0] != '>') fprintf(stream, ">");
 	fprintf(stream, "%s", ff->def);
 	if (ff->def[strlen(ff->def) -1] != '\n') fprintf(stream, "\n");
 
-	for (i = 0; i < ff->length; i++) {
+	for (int i = 0; i < ff->length; i++) {
 		fputc(ff->seq[i], stream);
 		if ((i+1) % FASTA_LINE_LENGTH == 0) fprintf(stream, "\n");
 	}

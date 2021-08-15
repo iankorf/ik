@@ -6,6 +6,7 @@
 #ifndef IK_TOOLBOX_C
 #define IK_TOOLBOX_C
 
+#include <limits.h>
 #include "toolbox.h"
 
 static char ik_version_number[] = "2021";
@@ -30,22 +31,19 @@ void ik_exit(const char* format, ...) {
 }
 
 void * ik_malloc(size_t size) {
-	void *mem;
-	mem = malloc(size);
+	void *mem = malloc(size);
 	if (mem == NULL) ik_exit("ik_malloc %d", size);
 	return mem;
 }
 
 void * ik_calloc(size_t count, size_t size) {
-	void *mem;
-	mem = calloc(count, size);
+	void *mem = calloc(count, size);
 	if (mem == NULL) ik_exit("ik_calloc %d %d", count, size);
 	return mem;
 }
 
 void * ik_realloc(void *p, size_t size) {
-	void *mem;
-	mem = realloc(p, size);
+	void *mem = realloc(p, size);
 	if (mem == NULL) ik_exit("ik_realloc %d", size);
 	return mem;
 }
@@ -114,11 +112,9 @@ float ik_fvec_pop(ik_fvec vec) {
 }
 
 void ik_tvec_free(ik_tvec vec) {
-	int i;
-
 	if (vec == NULL) return;
 	if (vec->elem) {
-		for (i = 0; i < vec->size; i++) free(vec->elem[i]);
+		for (int i = 0; i < vec->size; i++) free(vec->elem[i]);
 		free(vec->elem);
 	}
 	free(vec);
@@ -194,16 +190,13 @@ static double HASH_MULTIPLIER[7] = {
 static float MAX_HASH_DEPTH = 2.0;
 static int HashLevelToSlots(int level) {return pow(4, level);}
 static int HashFunc(const ik_map hash, const char *key) {
-	int	   i;
 	double sum = 0;
-	for (i = 0; i < strlen(key); i++) sum += key[i] * HASH_MULTIPLIER[i % 7];
+	for (int i = 0; i < strlen(key); i++)
+		sum += key[i] * HASH_MULTIPLIER[i % 7];
 	return (int) (hash->slots * (sum - floor(sum)));
 }
 
 static void ExpandHash(ik_map hash) {
-	int     i, j;
-	char   *key = NULL;
-	void   *val = NULL;
 	int		oldslots = hash->slots;
 	ik_vec *oldkey = hash->key;
 	ik_vec *oldval = hash->val;
@@ -216,7 +209,7 @@ static void ExpandHash(ik_map hash) {
 	hash->slots = HashLevelToSlots(hash->level);
 	hash->key	= ik_malloc(hash->slots * sizeof(struct ik_VEC));
 	hash->val	= ik_malloc(hash->slots * sizeof(struct ik_VEC));
-	for (i = 0; i < hash->slots; i++) {
+	for (int i = 0; i < hash->slots; i++) {
 		hash->key[i] = ik_vec_new();
 		hash->val[i] = ik_vec_new();
 	}
@@ -228,18 +221,18 @@ static void ExpandHash(ik_map hash) {
 	hash->keys = ik_tvec_new();
 
 	// transfer old stuff to new hash
-	for (i = 0; i < oldslots; i++) {
+	for (int i = 0; i < oldslots; i++) {
 		kvec = oldkey[i];
 		vvec = oldval[i];
-		for (j = 0; j < kvec->size; j++) {
-			key = kvec->elem[j];
-			val = vvec->elem[j];
+		for (int j = 0; j < kvec->size; j++) {
+			char *key = kvec->elem[j];
+			char *val = vvec->elem[j];
 			ik_map_set(hash, key, val);
 		}
 	}
 
 	// free old stuff
-	for (i = 0; i < oldslots; i++) {
+	for (int i = 0; i < oldslots; i++) {
 		kvec = oldkey[i];
 		vvec = oldval[i];
 		ik_vec_free(kvec);
@@ -251,11 +244,8 @@ static void ExpandHash(ik_map hash) {
 }
 
 void ik_map_free(ik_map hash) {
-	int i;
-
 	if (hash == NULL) return;
-
-	for (i = 0; i < hash->slots; i++) {
+	for (int i = 0; i < hash->slots; i++) {
 		if (hash->key[i]) ik_vec_free(hash->key[i]);
 		if (hash->val[i]) ik_vec_free(hash->val[i]);
 	}
@@ -279,14 +269,11 @@ ik_map ik_map_new(void) {
 }
 
 void * ik_map_get(const ik_map hash, const char *key) {
-	int	  i, index;
-	char *string = NULL;
-
-	index = HashFunc(hash, key);
+	int index = HashFunc(hash, key);
 
 	// resolve collisions
-	for (i = 0; i < hash->key[index]->size; i++) {
-		string = hash->key[index]->elem[i];
+	for (int i = 0; i < hash->key[index]->size; i++) {
+		char *string = hash->key[index]->elem[i];
 		if (strcmp(key, string) == 0) {
 			return hash->val[index]->elem[i];
 		}
@@ -295,15 +282,12 @@ void * ik_map_get(const ik_map hash, const char *key) {
 }
 
 void ik_map_set(ik_map hash, const char *key, void *val) {
-	int	  i, index;
-	char *string = NULL;
-	int	  new_key = 1;
-
-	index = HashFunc(hash, key);
+	int	new_key = 1;
+	int index = HashFunc(hash, key);
 
 	// reassign unless new key
-	for (i = 0; i < hash->key[index]->size; i++) {
-		string = hash->key[index]->elem[i];
+	for (int i = 0; i < hash->key[index]->size; i++) {
+		char *string = hash->key[index]->elem[i];
 		if (strcmp(key, string) == 0) {
 			hash->val[index]->elem[i] = val;
 			new_key = 0;
@@ -325,26 +309,23 @@ void ik_map_set(ik_map hash, const char *key, void *val) {
 }
 
 ik_tvec ik_map_keys(const ik_map hash) {
-	int		i;
 	ik_tvec vec = ik_tvec_new();
-	for (i = 0; i < hash->keys->size; i++) ik_tvec_push(vec, hash->keys->elem[i]);
+	for (int i = 0; i < hash->keys->size; i++) ik_tvec_push(vec, hash->keys->elem[i]);
 	return vec;
 }
 
 ik_vec ik_map_vals(const ik_map hash) {
-	int	   i;
 	ik_vec vec = ik_vec_new();
-	for (i = 0; i < hash->vals->size; i++) ik_vec_push(vec, hash->vals->elem[i]);
+	for (int i = 0; i < hash->vals->size; i++) ik_vec_push(vec, hash->vals->elem[i]);
 	return vec;
 }
 
 void ik_map_stat(const ik_map hash) {
-	int i, max, min, total, count;
-	max = 0;
-	min = 1000000;
-	total = 0;
-	for (i = 0; i < hash->slots; i++) {
-		count = hash->val[i]->size;
+	int max = 0;
+	int min = INT_MAX;
+	int total = 0;
+	for (int i = 0; i < hash->slots; i++) {
+		int count = hash->val[i]->size;
 		total += count;
 		if (count > max) max = count;
 		if (count < min) min = count;
@@ -411,11 +392,8 @@ void ik_register_option(const char *name, int flag) {
 }
 
 void ik_parse_options(int *argc, char **argv) {
-	int i;
-	char *token = NULL;
-
-	for (i = 0; i < *argc; i++) {
-		token = argv[i];
+	for (int i = 0; i < *argc; i++) {
+		char *token = argv[i];
 		if (token[0] == '-' && strlen(token) > 1) {
 			switch ((size_t)ik_map_get(CL_REGISTER, token)) {
 				case 0:
@@ -437,7 +415,7 @@ void ik_parse_options(int *argc, char **argv) {
 	}
 
 	*argc = COMMAND_LINE->size;
-	for (i = 0; i < COMMAND_LINE->size; i++) {
+	for (int i = 0; i < COMMAND_LINE->size; i++) {
 		argv[i] = COMMAND_LINE->elem[i];
 	}
 }
