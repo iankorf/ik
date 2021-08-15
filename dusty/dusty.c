@@ -18,16 +18,14 @@ options:\n\
 
 static double entropy(int a, int c, int g, int t) {
 	int total = a + c + g + t;
-	double h = 0;
-	double pa, pc, pg, pt;
-
 	if (total == 0) return 0;
 
-	pa = a / (double)total;
-	pc = c / (double)total;
-	pg = g / (double)total;
-	pt = t / (double)total;
+	double pa = a / (double)total;
+	double pc = c / (double)total;
+	double pg = g / (double)total;
+	double pt = t / (double)total;
 
+	double h = 0;
 	if (a > 0) h -= pa * log(pa);
 	if (c > 0) h -= pc * log(pc);
 	if (g > 0) h -= pg * log(pg);
@@ -38,8 +36,6 @@ static double entropy(int a, int c, int g, int t) {
 
 static char *dust1(const ik_fasta ff, int w, int t, int lc) {
 	int A, C, G, T;
-	int pos;
-	double h = 0;
 	char *mask = malloc(ff->length+1);
 	strcpy(mask, ff->seq);
 	for (int i = 0; i < ff->length; i++) mask[i] = toupper(mask[i]);
@@ -53,9 +49,9 @@ static char *dust1(const ik_fasta ff, int w, int t, int lc) {
 				case 'T': T++; break;
 			}
 		}
-		h = entropy(A, C, G, T);
+		double h = entropy(A, C, G, T);
 		if (h < t) {
-			pos = i + w/2;
+			int pos = i + w/2;
 			if (lc) mask[pos] = tolower(mask[pos]);
 			else    mask[pos] = 'N';
 		}
@@ -65,8 +61,6 @@ static char *dust1(const ik_fasta ff, int w, int t, int lc) {
 
 static char *dust2(const ik_fasta ff, int w, int t, int lc) {
 	int A, C, G, T;
-	int pos;
-	double h;
 	char *mask = malloc(ff->length+1);
 	strcpy(mask, ff->seq);
 	for (int i = 0; i < ff->length; i++) mask[i] = toupper(mask[i]);
@@ -83,9 +77,9 @@ static char *dust2(const ik_fasta ff, int w, int t, int lc) {
 		}
 	}
 
-	h = entropy(A, C, G, T);
+	double h = entropy(A, C, G, T);
 	if (h < t) {
-		pos = w/2;
+		int pos = w/2;
 		if (lc) mask[pos] = tolower(mask[pos]);
 		else    mask[pos] = 'N';
 	}
@@ -109,9 +103,9 @@ static char *dust2(const ik_fasta ff, int w, int t, int lc) {
 			case 'T': T--; break;
 		}
 
-		h = entropy(A, C, G, T);
+		double h = entropy(A, C, G, T);
 		if (h < t) {
-			pos = i + w/2;
+			int pos = i + w/2;
 			if (lc) mask[pos] = tolower(mask[pos]);
 			else    mask[pos] = 'N';
 		}
@@ -126,9 +120,7 @@ int main(int argc, char **argv) {
 	float h = 1.1;     // entropy
 	int   lc = 1;      // lowercase?
 	int   alg = 1;     // algorithm
-	ik_pipe io;
 	ik_fasta in, out;
-	char *mask = NULL;
 
 	// Command Line Interface
 	ik_set_program_name(argv[0]);
@@ -148,8 +140,9 @@ int main(int argc, char **argv) {
 	if (ik_option("-a")) alg = atoi(ik_option("-a"));
 
 	// main loop
-	io = ik_pipe_open(file, "r");
+	ik_pipe io = ik_pipe_open(file, "r");
 	while ((in = ik_fasta_read(io->stream)) != NULL) {
+		char *mask = NULL;
 		switch (alg) {
 			case 1: mask = dust1(in, w, h, lc); break;
 			case 2: mask = dust2(in, w, h, lc); break;
