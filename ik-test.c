@@ -4,6 +4,7 @@
 #include "sequence.h"
 #include "model.h"
 #include "feature.h"
+#include "align.h"
 
 static int COUNT = 100;
 void test_vec();
@@ -360,23 +361,23 @@ void test_len(int update, const char *filename) {
 	printf(" done\n");
 }
 
+
+
 void test_ian(void) {
-	ik_pipe  io  = ik_pipe_open("geney/777.fa", "r");
-	ik_fasta ff  = ik_fasta_read(io->stream);
-	ik_mm    mm  = ik_mm_read("geney/exon.mm");
-	double  *mem = ik_mm_cache(mm, ff->seq);
-	double   s0  = ik_mm_score(mm, ff->seq, 99, 178);
-	double   s1  = ik_mm_score_cache(mem, 99, 178);
-	printf("%f %f\n", s0, s1);
+	// current hidden test
 	
-	for (int i = -3; i <= 3; i++) {
-		for (int j = -3; j <= 3; j++) {
-			int beg = 99 + i;
-			int end = 178 + j;
-			double s2 = mem[end] - mem[beg];
-			if (fabs(s2 - s0) < 0.3) {
-				printf("%d %d %f\n", i, j, s2 - s0);
-			}
-		}
+	ik_smat bm = ik_smat_blosum(62);
+	printf("%s\n", bm->name);
+	for (char c = 'A'; c < 'Z'; c++) {
+		printf("%c %d\n", c, bm->score[(int)c][(int)'A']);
 	}
+	ik_smat_free(bm);
+	
+	ik_smat nm = ik_smat_mng(1, -2, -3);
+	printf("%s\n", nm->name);
+	for (char c = 'A'; c < 'Z'; c++) {
+		printf("%c %d\n", c, nm->score[(int)c][(int)'A']);
+	}
+	ik_smat_free(nm);
+		
 }

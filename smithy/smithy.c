@@ -52,13 +52,6 @@ int main(int argc, char **argv) {
 	while ((ff1 = ik_fasta_read(io1->stream)) != NULL) {
 		while ((ff2 = ik_fasta_read(io2->stream)) != NULL) {
 		
-			/*
-			switch (a) {
-				case 1: 
-				case 2: 
-				default: ik_exit("algorithm out of range");
-			}
-			*/
 			stuff(m, n, g, a);
 		
 			ik_fasta_free(ff1);

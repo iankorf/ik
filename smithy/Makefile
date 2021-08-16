@@ -3,8 +3,7 @@
 LIB = -lm -lik
 LINC = -L..
 INC = -I..
-CFLAGS = -O2
-OBJECTS = align.o
+CFLAGS = -O2 -Wall -Werror
 
 APP = smithy
 OBJ = smithy.o

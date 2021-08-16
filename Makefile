@@ -6,6 +6,7 @@ LIB = -lm
 CFLAGS = -O2 -Wall -Werror
 
 OBJECTS = \
+	align.o\
 	feature.o\
 	model.o\
 	sequence.o\
