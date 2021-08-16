@@ -118,8 +118,8 @@ ik_smat ik_smat_blosum(int n) {
 	}
 	
 	// clear out
-	for (int i = 0; i < 128; i++) {
-		for (int j = 0; j < 128; j++) {
+	for (int i = 0; i < 25; i++) {
+		for (int j = 0; j < 25; j++) {
 			mat->score[i][j] = INT_MIN;
 		}
 	}
@@ -128,9 +128,9 @@ ik_smat ik_smat_blosum(int n) {
 	for (int i = 0; i < 25; i++) {
 		for (int j = 0; j < 25; j++) {
 			switch (n) {
-				case 40: mat->score[i+65][j+65] = B40[i][j]; break;
-				case 62: mat->score[i+65][j+65] = B62[i][j]; break;
-				case 80: mat->score[i+65][j+65] = B80[i][j]; break;
+				case 40: mat->score[i][j] = B40[i][j]; break;
+				case 62: mat->score[i][j] = B62[i][j]; break;
+				case 80: mat->score[i][j] = B80[i][j]; break;
 			}
 		}
 	}
@@ -147,8 +147,8 @@ ik_smat ik_smat_mng(int m, int n, int g) {
 
 	sprintf(mat->name, "+%d/%d/%d", m, n, g); 
 	mat->gap = g;
-	for (int i = 0; i < 128; i++) {
-		for (int j = 0; j < 128; j++) {
+	for (int i = 0; i < 25; i++) {
+		for (int j = 0; j < 25; j++) {
 			if (i == j) mat->score[i][j] = m;
 			else        mat->score[i][j] = n;
 		}
@@ -181,11 +181,100 @@ ik_hsp ik_hsp_new (void) {
 
 // alignment
 
-
 ik_hsp ik_sw(const char *s1, const char *s2, ik_smat m) {
+	int l1 = strlen(s1);
+	int l2 = strlen(s2);
+	
+	// allocate matrices
+	int  ** sm = malloc(sizeof(double*) * (l1+1));
+	char ** tm = malloc(sizeof(double*) * (l1+1));
+	for (int i = 0; i <= l1; i++)  sm[i] = malloc(sizeof(double) * (l2+1));
+	for (int i = 0; i <= l1; i++)  tm[i] = malloc(sizeof(double) * (l2+1));
+	
+	// init first column and row
+	for (int i = 0; i <= l1; i++) sm[i][0] = 0, tm[i][0] = '.';
+	for (int j = 1; j <= l2; j++) sm[0][j] = 0, tm[0][j] = '.';
 
-	ik_hsp hsp = NULL;
+	// fill matrix
+	int max_s = 0;
+	int max_i = 0;
+	int max_j = 0;
+	for (int i = 1; i <= l1; i++) {
+		for (int j = 1; j <= l2; j++) {
+			int a = s1[i-1] - 'A';
+			int b = s2[j-1] - 'A';
+			int d = sm[i-1][j-1] + m->score[a][b];
+			int h = sm[i-1][j  ] + m->gap;
+			int v = sm[i  ][j-1] + m->gap;
+
+			if (d > h && d > v && d > 0) sm[i][j] = d, tm[i][j] = 'd';
+			else if (h > v && h > 0)     sm[i][j] = h, tm[i][j] = 'h';
+			else if (v > 0)              sm[i][j] = v, tm[i][j] = 'v';
+			else                         sm[i][j] = 0, tm[i][j] = '.';
+
+			if (d > max_s) {
+				max_s = d;
+				max_i = i;
+				max_j = j;
+			}
+		}
+	}
+	
+	// allocate alignment strings
+	char *a1 = malloc((l1 + l2 + 1) * sizeof(char));
+	char *a2 = malloc((l1 + l2 + 1) * sizeof(char));
+	char *a3 = malloc((l1 + l2 + 1) * sizeof(char));
+
+	// traceback
+	int i = max_i;
+	int j = max_j;
+	int pos = 0;
+	int min_i;
+	int min_j;
+	while (sm[i][j] > 0) {
+		a1[pos] = s1[i-1];
+		a2[pos] = s2[j-1];
+		min_i = i;
+		min_j = j;
+		pos++;
+		if      (tm[i][j] == 'd') i--, j--;
+		else if (tm[i][j] == 'h') j--;
+		else if (tm[i][j] == 'v') i--;
+	}
+	a1[pos] = '\0';
+	a2[pos] = '\0';
+	a3[pos] = '\0';
+	
+	// reverse strings and make alignment string
+	for (i = 0; i < strlen(a1); i++) a3[pos -i -1] = a1[i];
+	for (i = 0; i < strlen(a2); i++) a1[pos -i -1] = a2[i];
+	// alignment string not done
+
+	// return values
+	ik_hsp hsp = ik_hsp_new();
+	hsp->score = max_s;
+	hsp->length = strlen(a1);
+	hsp->beg1 = min_i;
+	hsp->end1 = max_i;
+	hsp->beg2 = min_j;
+	hsp->end2 = max_j;
+	hsp->s1 = a1;
+	hsp->s2 = a2;
+	hsp->as = a3;
+	
+	// clean up
+	for (i = 0; i <= l1; i++) {
+		free(sm[i]);
+		free(tm[i]);
+	}
+	free(sm);
+	free(tm);
+	
 	return hsp;
+}
+
+ik_hsp ik_swl(const char *s1, const char *s2, ik_smat m) {
+	return NULL;
 }
 
 /*

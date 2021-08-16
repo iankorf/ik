@@ -34,15 +34,16 @@ protein sequences do not have their own data types: they are just strings.
 There are a few programs included to demonstrate how to use the library.
 
 + dusty - complexity filter
-+ smithy - pairwise alignment
++ smithy - pairwise alignment (not done)
 + geney - sequence features
 
 ## To Do ##
 
-+ all code needs _modernization_ checks
++ rework alignment code
 + ik-test needs more tests
 	+ mRNA
 	+ utilities
-+ smithy needs work
++ smithy doesn't do anything
 + translate function
-+ translate mRNA
++ translate mRNA for longest ORF
++ translate mRNA from ATG

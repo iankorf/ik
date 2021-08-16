@@ -22,7 +22,7 @@
 struct ik_SMAT {
 	char name[32];
 	int  gap;
-	int  score[128][128];
+	int  score[25][25];
 };
 typedef struct ik_SMAT * ik_smat;
 void ik_smat_free(ik_smat);
@@ -49,12 +49,6 @@ ik_hsp ik_hsp_new (void);
 // alignment algorithms
 
 ik_hsp ik_sw(const char *, const char *, ik_smat);
-
-/*
-ik_hsp ik_sw_mmg (const char *, const char *, int, int, int);
-int    ik_sw_mmglm (const char *, const char *, int, int, int);
-ik_hsp ik_sw_mat (const char *, const char *, int);
-int    ik_sw_matlm (const char *, const char *, int);
-*/
+ik_hsp ik_swl(const char *, const char *, ik_smat);
 
 #endif

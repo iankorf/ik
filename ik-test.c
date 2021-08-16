@@ -15,13 +15,17 @@ void test_vec(int);
 void test_tmap(int);
 void test_map(int);
 void test_feat(int);
+void test_smat(int);
+void test_sw(int);
+void test_swl(int);
 void test_pipe(int, const char *);
 void test_fasta(int, const char *);
 void test_gff(int, const char *);
 void test_pwm(int, const char *);
 void test_mm(int, const char *);
 void test_len(int, const char*);
-void test_ian(void);
+
+void test_this(void);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
@@ -33,6 +37,8 @@ options:\n\
   -tmap\n\
   -map\n\
   -feat\n\
+  -smat\n\
+  -sw\n\
   -pipe  <file>\n\
   -fasta <file>\n\
   -gff   <file>\n\
@@ -61,13 +67,16 @@ int main(int argc, char ** argv) {
 	ik_register_option("-tmap",  0);
 	ik_register_option("-map",   0);
 	ik_register_option("-feat",  0);
+	ik_register_option("-smat",  0);
+	ik_register_option("-sw",    0);
+	ik_register_option("-swl",   0);
 	ik_register_option("-pipe",  1);
 	ik_register_option("-fasta", 1);
 	ik_register_option("-gff",   1);
 	ik_register_option("-pwm",   1);
 	ik_register_option("-mm",    1);
 	ik_register_option("-len",   1);
-	ik_register_option("-ian",   0);
+	ik_register_option("-this",  0);
 	ik_parse_options(&argc, argv);
 
 	/* control */
@@ -82,13 +91,16 @@ int main(int argc, char ** argv) {
 	if (ik_option("-tmap"))  test_tmap(update);
 	if (ik_option("-map"))	 test_map(update);
 	if (ik_option("-feat"))  test_feat(update);
+	if (ik_option("-smat"))  test_smat(update);
+	if (ik_option("-sw"))    test_sw(update);
+	if (ik_option("-swl"))   test_swl(update);
 	if (ik_option("-pipe"))  test_pipe(update,  ik_option("-pipe"));
 	if (ik_option("-fasta")) test_fasta(update, ik_option("-fasta"));
 	if (ik_option("-gff"))   test_gff(update,   ik_option("-gff"));
 	if (ik_option("-pwm"))   test_pwm(update,   ik_option("-pwm"));
 	if (ik_option("-mm"))    test_mm(update,    ik_option("-mm"));
 	if (ik_option("-len"))   test_len(update,   ik_option("-len"));
-	if (ik_option("-ian"))   test_ian();
+	if (ik_option("-this"))  test_this();
 
 	return 0;
 }
@@ -361,23 +373,49 @@ void test_len(int update, const char *filename) {
 	printf(" done\n");
 }
 
+void test_smat(int update) {
+	printf("smat ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		for (int j = 0; j < 100; j++) {
+			ik_smat blosum = ik_smat_blosum(62);
+			ik_smat_free(blosum);
+			ik_smat nt = ik_smat_mng(1, -1, -2);
+			ik_smat_free(nt);
+		}
+	}
+	printf(" done\n");
+}
 
+void test_sw(int update) {
+	printf("sw ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		// stuff here
+	}
+	printf(" done\n");
+}
 
-void test_ian(void) {
+void test_swl(int update) {
+	printf("swl ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		// stuff here
+	}
+	printf(" done\n");
+}
+
+void test_this(void) {
 	// current hidden test
-	
-	ik_smat bm = ik_smat_blosum(62);
-	printf("%s\n", bm->name);
-	for (char c = 'A'; c < 'Z'; c++) {
-		printf("%c %d\n", c, bm->score[(int)c][(int)'A']);
-	}
-	ik_smat_free(bm);
-	
-	ik_smat nm = ik_smat_mng(1, -2, -3);
-	printf("%s\n", nm->name);
-	for (char c = 'A'; c < 'Z'; c++) {
-		printf("%c %d\n", c, nm->score[(int)c][(int)'A']);
-	}
-	ik_smat_free(nm);
-		
+	printf("hello world\n");
+	// alignment next
 }
