@@ -17,6 +17,10 @@ void test_feat(int);
 void test_pipe(int, const char *);
 void test_fasta(int, const char *);
 void test_gff(int, const char *);
+void test_pwm(int, const char *);
+void test_mm(int, const char *);
+void test_len(int, const char*);
+void test_ian(void);
 
 static char usage[] = "\
 usage: ik-test [options]\n\
@@ -31,6 +35,9 @@ options:\n\
   -pipe  <file>\n\
   -fasta <file>\n\
   -gff   <file>\n\
+  -pwm   <file\n\
+  -mm    <file>\n\
+  -len   <file\n\
   -count <int> [100]\n\
 ";
 
@@ -56,6 +63,10 @@ int main(int argc, char ** argv) {
 	ik_register_option("-pipe",  1);
 	ik_register_option("-fasta", 1);
 	ik_register_option("-gff",   1);
+	ik_register_option("-pwm",   1);
+	ik_register_option("-mm",    1);
+	ik_register_option("-len",   1);
+	ik_register_option("-ian",   0);
 	ik_parse_options(&argc, argv);
 
 	/* control */
@@ -70,9 +81,13 @@ int main(int argc, char ** argv) {
 	if (ik_option("-tmap"))  test_tmap(update);
 	if (ik_option("-map"))	 test_map(update);
 	if (ik_option("-feat"))  test_feat(update);
-	if (ik_option("-pipe"))  test_pipe(update, ik_option("-pipe"));
+	if (ik_option("-pipe"))  test_pipe(update,  ik_option("-pipe"));
 	if (ik_option("-fasta")) test_fasta(update, ik_option("-fasta"));
-	if (ik_option("-gff"))   test_gff(update, ik_option("-gff"));
+	if (ik_option("-gff"))   test_gff(update,   ik_option("-gff"));
+	if (ik_option("-pwm"))   test_pwm(update,   ik_option("-pwm"));
+	if (ik_option("-mm"))    test_mm(update,    ik_option("-mm"));
+	if (ik_option("-len"))   test_len(update,   ik_option("-len"));
+	if (ik_option("-ian"))   test_ian();
 
 	return 0;
 }
@@ -298,4 +313,70 @@ void test_gff(int update, const char *filename) {
 		}
 	}
 	printf(" done\n");
+}
+
+void test_pwm(int update, const char *filename) {
+	printf("pwm ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		for (int j = 0; j < 100; j++) {
+			ik_pwm pwm = ik_pwm_read(filename);
+			ik_pwm_free(pwm);
+		}
+	}
+	printf(" done\n");
+}
+
+void test_mm(int update, const char *filename) {
+	printf("mm ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		for (int j = 0; j < 100; j++) {
+			ik_mm mm = ik_mm_read(filename);
+			ik_mm_free(mm);
+		}
+	}
+	printf(" done\n");
+}
+
+void test_len(int update, const char *filename) {
+	printf("len ");
+	for (int i = 0; i < COUNT; i++) {
+		if (i % update == 0) {
+			printf(".");
+			fflush(stdout);
+		}
+		for (int j = 0; j < 100; j++) {
+			ik_len len = ik_len_read(filename, 1000);
+			ik_len_free(len);
+		}
+	}
+	printf(" done\n");
+}
+
+void test_ian(void) {
+	ik_pipe  io  = ik_pipe_open("geney/777.fa", "r");
+	ik_fasta ff  = ik_fasta_read(io->stream);
+	ik_mm    mm  = ik_mm_read("geney/exon.mm");
+	double  *mem = ik_mm_cache(mm, ff->seq);
+	double   s0  = ik_mm_score(mm, ff->seq, 99, 178);
+	double   s1  = ik_mm_score_cache(mem, 99, 178);
+	printf("%f %f\n", s0, s1);
+	
+	for (int i = -3; i <= 3; i++) {
+		for (int j = -3; j <= 3; j++) {
+			int beg = 99 + i;
+			int end = 178 + j;
+			double s2 = mem[end] - mem[beg];
+			if (fabs(s2 - s0) < 0.3) {
+				printf("%d %d %f\n", i, j, s2 - s0);
+			}
+		}
+	}
 }

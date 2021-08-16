@@ -31,6 +31,15 @@ double prob2score(double p) {
 
 // PWM
 
+void ik_pwm_free(ik_pwm pwm) {
+	free(pwm->name);
+	for (int i = 0; i < pwm->size; i++) {
+		free(pwm->score[i]);
+	}
+	free(pwm->score);
+	free(pwm);
+}
+
 ik_pwm ik_pwm_read(const char *filename) {
 	char    *line = NULL;
 	size_t   len = 0;
@@ -84,6 +93,12 @@ double ik_pwm_score(const ik_pwm pwm, const char *seq, int pos) {
 
 // Markov model
 
+void ik_mm_free(ik_mm mm) {
+	free(mm->name);
+	free(mm->score);
+	free(mm);
+}
+
 ik_mm ik_mm_read(const char *filename) {
 	char    *line = NULL;
 	size_t   len = 0;
@@ -120,27 +135,28 @@ ik_mm ik_mm_read(const char *filename) {
 
 double ik_mm_score(const ik_mm mm, const char *seq, int pos, int end) {
 	double p = 0;
-
 	if (pos < mm->k) pos = mm->k;
 	for (int i = pos; i <= end; i++) {
 		int idx = dna2dec(seq, i, mm->k);
 		if (idx != -1) p += mm->score[idx];
 	}
-
 	return p;
 }
 
 double * ik_mm_cache(const ik_mm mm, const char *seq) {
 	int len = strlen(seq);
 	double *score = malloc(sizeof(double) * len);
-	for (int i = 0; i < mm->size; i++) score[i] = 0;
-	for (int i = mm->size; i < len; i++) {
+	for (int i = 0; i < mm->k; i++) score[i] = 0;
+	for (int i = mm->k; i < len; i++) {
 		int idx = dna2dec(seq, i, mm->k);
 		if (idx == -1) score[i] = score[i-1];
 		else           score[i] = score[i-1] + mm->score[idx];
 	}
-
 	return score;
+}
+
+double ik_mm_score_cache(const double *cache, int beg, int end) {
+	return cache[end] - cache[beg -1];
 }
 
 // Length model
@@ -160,6 +176,12 @@ static double find_tail(double val, int x) {
 	}
 
 	return m;
+}
+
+void ik_len_free(ik_len model) {
+	free(model->name);
+	free(model->score);
+	free(model);
 }
 
 ik_len ik_len_read(const char *filename, int limit) {
