@@ -49,6 +49,5 @@ ik_hsp ik_hsp_new (void);
 // alignment algorithms
 
 ik_hsp ik_sw(const char *, const char *, ik_smat);
-ik_hsp ik_swl(const char *, const char *, ik_smat);
 
 #endif

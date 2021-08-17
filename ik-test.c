@@ -17,7 +17,6 @@ void test_map(int);
 void test_feat(int);
 void test_smat(int);
 void test_sw(int);
-void test_swl(int);
 void test_pipe(int, const char *);
 void test_fasta(int, const char *);
 void test_gff(int, const char *);
@@ -69,7 +68,6 @@ int main(int argc, char ** argv) {
 	ik_register_option("-feat",  0);
 	ik_register_option("-smat",  0);
 	ik_register_option("-sw",    0);
-	ik_register_option("-swl",   0);
 	ik_register_option("-pipe",  1);
 	ik_register_option("-fasta", 1);
 	ik_register_option("-gff",   1);
@@ -93,7 +91,6 @@ int main(int argc, char ** argv) {
 	if (ik_option("-feat"))  test_feat(update);
 	if (ik_option("-smat"))  test_smat(update);
 	if (ik_option("-sw"))    test_sw(update);
-	if (ik_option("-swl"))   test_swl(update);
 	if (ik_option("-pipe"))  test_pipe(update,  ik_option("-pipe"));
 	if (ik_option("-fasta")) test_fasta(update, ik_option("-fasta"));
 	if (ik_option("-gff"))   test_gff(update,   ik_option("-gff"));
@@ -261,7 +258,7 @@ void test_feat(int update) {
 			printf(".");
 			fflush(stdout);
 		}
-		for (int j = 0; j < 9999; j++) {
+		for (int j = 0; j < 5555; j++) {
 			ik_feat f = ik_feat_new(seq, 10, 25);
 			char *s = ik_feat_seq(f);
 			if (strcmp(s, "GTAAGTTTTTTTTCAG") != 0) ik_exit("feat bad");
@@ -297,7 +294,7 @@ void test_fasta(int update, const char *filename) {
 			fflush(stdout);
 		}
 		
-		for (int j = 0; j < 100; j ++) {
+		for (int j = 0; j < 20; j ++) {
 			ik_pipe io = ik_pipe_open(filename, "r");
 			while ((in = ik_fasta_read(io->stream)) != NULL) {
 				ik_fasta_free(in);
@@ -317,7 +314,7 @@ void test_gff(int update, const char *filename) {
 			fflush(stdout);
 		}
 		
-		for (int j = 0; j < 100; j ++) {
+		for (int j = 0; j < 10; j ++) {
 			ik_pipe io = ik_pipe_open(filename, "r");
 			while ((gff = ik_gff_read(io->stream)) != NULL) {
 				ik_gff_free(gff);
@@ -335,7 +332,7 @@ void test_pwm(int update, const char *filename) {
 			printf(".");
 			fflush(stdout);
 		}
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < 50; j++) {
 			ik_pwm pwm = ik_pwm_read(filename);
 			ik_pwm_free(pwm);
 		}
@@ -350,7 +347,7 @@ void test_mm(int update, const char *filename) {
 			printf(".");
 			fflush(stdout);
 		}
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < 10; j++) {
 			ik_mm mm = ik_mm_read(filename);
 			ik_mm_free(mm);
 		}
@@ -365,7 +362,7 @@ void test_len(int update, const char *filename) {
 			printf(".");
 			fflush(stdout);
 		}
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < 10; j++) {
 			ik_len len = ik_len_read(filename, 1000);
 			ik_len_free(len);
 		}
@@ -380,7 +377,7 @@ void test_smat(int update) {
 			printf(".");
 			fflush(stdout);
 		}
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < 999; j++) {
 			ik_smat blosum = ik_smat_blosum(62);
 			ik_smat_free(blosum);
 			ik_smat nt = ik_smat_mng(1, -1, -2);
@@ -392,30 +389,29 @@ void test_smat(int update) {
 
 void test_sw(int update) {
 	printf("sw ");
+	ik_smat b62 = ik_smat_blosum(62);
+	char *s1 = "AAAAACDEF";
+	char *s2 = "ACDEFFFFF";
+	
 	for (int i = 0; i < COUNT; i++) {
 		if (i % update == 0) {
 			printf(".");
 			fflush(stdout);
 		}
 		// stuff here
-	}
-	printf(" done\n");
-}
-
-void test_swl(int update) {
-	printf("swl ");
-	for (int i = 0; i < COUNT; i++) {
-		if (i % update == 0) {
-			printf(".");
-			fflush(stdout);
+		for (int j = 0; j < 200; j++) {
+			ik_hsp msp = ik_sw(s1, s2, b62);
+			ik_hsp_free(msp);
 		}
-		// stuff here
 	}
+	
+	ik_smat_free(b62);
 	printf(" done\n");
 }
 
 void test_this(void) {
-	// current hidden test
+
+	// current private test
 	printf("hello world\n");
-	// alignment next
+	
 }

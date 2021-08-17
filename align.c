@@ -163,6 +163,7 @@ void ik_hsp_free (ik_hsp hsp) {
 	free(hsp->s1);
 	free(hsp->s2);
 	free(hsp->as);
+	free(hsp);
 }
 
 ik_hsp ik_hsp_new (void) {
@@ -232,37 +233,57 @@ ik_hsp ik_sw(const char *s1, const char *s2, ik_smat m) {
 	int min_i;
 	int min_j;
 	while (sm[i][j] > 0) {
-		a1[pos] = s1[i-1];
-		a2[pos] = s2[j-1];
+		if (tm[i][j] == 'd') {
+			a1[pos] = s1[i-1];
+			a2[pos] = s2[j-1];
+			i--;
+			j--;
+		} else if (tm[i][j] == 'v') {
+			a1[pos] = '-';
+			a2[pos] = s2[j-1];
+			j--;
+		} else if (tm[i][j] == 'h') {
+			a1[pos] = s1[i-1];
+			a2[pos] = '-';
+			i--;
+		}
 		min_i = i;
 		min_j = j;
 		pos++;
-		if      (tm[i][j] == 'd') i--, j--;
-		else if (tm[i][j] == 'h') j--;
-		else if (tm[i][j] == 'v') i--;
 	}
 	a1[pos] = '\0';
 	a2[pos] = '\0';
 	a3[pos] = '\0';
 	
-	// reverse strings and make alignment string
-	for (i = 0; i < strlen(a1); i++) a3[pos -i -1] = a1[i];
-	for (i = 0; i < strlen(a2); i++) a1[pos -i -1] = a2[i];
-	// alignment string not done
-
 	// return values
 	ik_hsp hsp = ik_hsp_new();
 	hsp->score = max_s;
 	hsp->length = strlen(a1);
 	hsp->beg1 = min_i;
-	hsp->end1 = max_i;
+	hsp->end1 = max_i -1;
 	hsp->beg2 = min_j;
-	hsp->end2 = max_j;
-	hsp->s1 = a1;
-	hsp->s2 = a2;
-	hsp->as = a3;
+	hsp->end2 = max_j -1;
+	hsp->s1 = malloc(hsp->length +1);
+	hsp->s2 = malloc(hsp->length +1);
+	hsp->as = malloc(hsp->length +1);
+	
+	for (int i = 0; i < hsp->length; i++) {
+		int pos = hsp->length -i -1;
+		hsp->s1[pos] = a1[i];
+		hsp->s2[pos] = a2[i];
+	}
+	for (int i = 0; i< hsp->length; i++) {
+		if (hsp->s1[i] == hsp->s2[i]) hsp->as[i] = '|';
+		else                          hsp->as[i] = ' ';
+	}
+	hsp->s1[hsp->length] = '\0';
+	hsp->s2[hsp->length] = '\0';
+	hsp->as[hsp->length] = '\0';
 	
 	// clean up
+	free(a1);
+	free(a2);
+	free(a3);
 	for (i = 0; i <= l1; i++) {
 		free(sm[i]);
 		free(tm[i]);
@@ -272,261 +293,5 @@ ik_hsp ik_sw(const char *s1, const char *s2, ik_smat m) {
 	
 	return hsp;
 }
-
-ik_hsp ik_swl(const char *s1, const char *s2, ik_smat m) {
-	return NULL;
-}
-
-/*
-
-ik_hsp sw_mmg(const char *s1, const char *s2, int m, int n, int g) {
-	int i, j, l1, l2, max_i, max_j, min_i, min_j, pos;
-	double d, v, h, max_s = 0;
-	double ** sm;
-	char ** tm;
-	char *a1, *a2, *a3;
-	ik_hsp hsp;
-
-	l1 = strlen(s1), l2 = strlen(s2);
-
-	// allocate matrices
-	sm = malloc(sizeof(double*) * (l1+1));
-	tm = malloc(sizeof(double*) * (l1+1));
-	for (i = 0; i <= l1; i++)  sm[i] = malloc(sizeof(double) * (l2+1));
-	for (i = 0; i <= l1; i++)  tm[i] = malloc(sizeof(double) * (l2+1));
-
-	// init first column and row
-	for (i = 0; i <= l1; i++) sm[i][0] = 0, tm[i][0] = '.';
-	for (j = 1; j <= l2; j++) sm[0][j] = 0, tm[0][j] = '.';
-
-	// fill matrix
-	for (i = 1; i <= l1; i++) {
-		for (j = 1; j <= l2; j++) {
-			if (s1[i-1] == s2[j-1]) d = sm[i-1][j-1] + m;
-			else                    d = sm[i-1][j-1] + n;
-			h = sm[i-1][j] + g;
-			v = sm[i][j-1] + g;
-
-			if (d > h && d > v && d > 0) sm[i][j] = d, tm[i][j] = 'd';
-			else if (h > v && h > 0)     sm[i][j] = h, tm[i][j] = 'h';
-			else if (v > 0)              sm[i][j] = v, tm[i][j] = 'v';
-			else                         sm[i][j] = 0, tm[i][j] = '.';
-
-			if (d > max_s) max_s = d, max_i = i, max_j = j;
-		}
-	}
-
-	// allocate alignment strings
-	a1 = malloc((l1 + l2 + 1) * sizeof(char));
-	a2 = malloc((l1 + l2 + 1) * sizeof(char));
-	a3 = malloc((l1 + l2 + 1) * sizeof(char));
-
-	// traceback
-	i = max_i, j = max_j, pos = 0;
-	while (sm[i][j] > 0) {
-		a1[pos] = s1[i-1];
-		a2[pos] = s2[j-1];
-		min_i = i;
-		min_j = j;
-
-		pos++;
-		if      (tm[i][j] == 'd') i--, j--;
-		else if (tm[i][j] == 'h') j--;
-		else if (tm[i][j] == 'v') i--;
-	}
-	a1[pos] = '\0', a2[pos] = '\0', a3[pos] = '\0';
-
-	// reverse strings and make alignment string
-	for (i = 0; i < strlen(a1); i++) a3[pos -i -1] = a1[i];
-	for (i = 0; i < strlen(a2); i++) a1[pos -i -1] = a2[i];
-
-	// clean up
-	free(a1); free(a2); free(a3);
-
-	for (i = 0; i <= l1; i++) {
-		free(sm[i]);
-		free(tm[i]);
-	}
-	free(sm);
-	free(tm);
-
-	// return
-	hsp = ik_hsp_new();
-	hsp->score = max_s;
-	hsp->length = strlen(a1);
-	hsp->s1 = a1;
-	hsp->s2 = a2;
-	hsp->as = a3;
-	return hsp;
-}
-
-int sw_mmg_linear (const char *s1, const char *s2, int m, int n, int g) {
-	int i, j, k, l1, l2, max_i, max_j;
-	double d, v, h, max_s = 0;
-	double *r1, *r2;
-
-	// init
-	l1 = strlen(s1);
-	l2 = strlen(s2);
-	r1 = malloc(sizeof(double) * l2 + 1);
-	r2 = malloc(sizeof(double) * l2 + 1);
-	for (j = 0; j <= l2; j++) r1[j] = 0;
-	r2[0] = 0;
-
-	// fill 
-	for (i = 1; i <= l1; i++) {
-		for (j = 1; j <= l2; j++) {
-			if (s1[i-1] == s2[j-1]) d = r1[j-1] + m;
-			else                    d = r1[j-1] + n;
-			h = r1[j] + g;
-			v = r2[j-1] + g;
-
-			if      (d > h && d > v && d > 0) r2[j] = d;
-			else if (h > v && h > 0)          r2[j] = h;
-			else if (v > 0)                   r2[j] = v;
-			else                              r2[j] = 0;
-
-			if (d > max_s) max_s = d, max_i = i, max_j = j;
-		}
-
-		// copy row 2 to row 1
-		for (k = 0; k <= l2; k++) r1[k] = r2[k];
-		r2[0] = 0;
-	}
-
-	// clean up
-	free(r1);
-	free(r2);
-
-	return max_s;
-}
-
-ik_hsp sw_mat (const char *s1, const char *s2, int blosum) {
-	int i, j, l1, l2, max_i, max_j, min_i, min_j, pos;
-	double d, v, h, max_s = 0;
-	double ** sm;
-	char ** tm;
-	char *a1, *a2, *a3;
-	int a, b;
-	ik_hsp hsp;
-
-	l1 = strlen(s1), l2 = strlen(s2);
-	set_matrix(blosum);
-
-	// allocate matrices
-	sm = malloc(sizeof(double*) * (l1+1));
-	tm = malloc(sizeof(double*) * (l1+1));
-	for (i = 0; i <= l1; i++)  sm[i] = malloc(sizeof(double) * (l2+1));
-	for (i = 0; i <= l1; i++)  tm[i] = malloc(sizeof(double) * (l2+1));
-
-	// init first column and row
-	for (i = 0; i <= l1; i++) sm[i][0] = 0, tm[i][0] = '.';
-	for (j = 1; j <= l2; j++) sm[0][j] = 0, tm[0][j] = '.';
-
-	// fill matrix
-	for (i = 1; i <= l1; i++) {
-		for (j = 1; j <= l2; j++) {
-			a = s1[i-1] - 'A';
-			b = s2[j-1] - 'A';
-			d = sm[i-1][j-1] + MAT[a][b];
-			h = sm[i-1][j  ] + GAP;
-			v = sm[i  ][j-1] + GAP;
-
-			if (d > h && d > v && d > 0) sm[i][j] = d, tm[i][j] = 'd';
-			else if (h > v && h > 0)     sm[i][j] = h, tm[i][j] = 'h';
-			else if (v > 0)              sm[i][j] = v, tm[i][j] = 'v';
-			else                         sm[i][j] = 0, tm[i][j] = '.';
-
-			if (d > max_s) max_s = d, max_i = i, max_j = j;
-		}
-	}
-
-	// allocate alignment strings
-	a1 = malloc((l1 + l2 + 1) * sizeof(char));
-	a2 = malloc((l1 + l2 + 1) * sizeof(char));
-	a3 = malloc((l1 + l2 + 1) * sizeof(char));
-
-	// traceback
-	i = max_i, j = max_j, pos = 0;
-	while (sm[i][j] > 0) {
-		a1[pos] = s1[i-1];
-		a2[pos] = s2[j-1];
-		min_i = i;
-		min_j = j;
-
-		pos++;
-		if      (tm[i][j] == 'd') i--, j--;
-		else if (tm[i][j] == 'h') j--;
-		else if (tm[i][j] == 'v') i--;
-	}
-	a1[pos] = '\0', a2[pos] = '\0', a3[pos] = '\0';
-
-	// reverse strings and make alignment string
-	for (i = 0; i < strlen(a1); i++) a3[pos -i -1] = a1[i];
-	for (i = 0; i < strlen(a2); i++) a1[pos -i -1] = a2[i];
-
-	// clean up
-	free(a1); free(a2); free(a3);
-
-	for (i = 0; i <= l1; i++) {
-		free(sm[i]);
-		free(tm[i]);
-	}
-	free(sm);
-	free(tm);
-
-	// return
-	hsp = ik_hsp_new();
-	hsp->score = max_s;
-	hsp->length = strlen(a1);
-	hsp->s1 = a1;
-	hsp->s2 = a2;
-	hsp->as = a3;
-	return hsp;
-}
-
-int sw_mat_linear (const char *s1, const char *s2, int blosum) {
-	int i, j, k, l1, l2, max_i, max_j, a, b;
-	double d, v, h, max_s = 0;
-	double *r1, *r2;
-
-	// init
-	l1 = strlen(s1);
-	l2 = strlen(s2);
-	set_matrix(blosum);
-	r1 = malloc(sizeof(double) * l2 + 1);
-	r2 = malloc(sizeof(double) * l2 + 1);
-	for (j = 0; j <= l2; j++) r1[j] = 0;
-	r2[0] = 0;
-
-	// fill
-	for (i = 1; i <= l1; i++) {
-		for (j = 1; j <= l2; j++) {
-			a = s1[i-1] - 'A';
-			b = s2[j-1] - 'A';
-			d = r1[j-1] + MAT[a][b];
-			h = r1[j] + GAP;
-			v = r2[j-1] + GAP;
-
-			if      (d > h && d > v && d > 0) r2[j] = d;
-			else if (h > v && h > 0)          r2[j] = h;
-			else if (v > 0)                   r2[j] = v;
-			else                              r2[j] = 0;
-
-			if (d > max_s) max_s = d, max_i = i, max_j = j;
-		}
-
-		// copy row 2 to row
-		for (k = 0; k <= l2; k++) r1[k] = r2[k];
-		r2[0] = 0;
-	}
-
-	// clean up
-	free(r1);
-	free(r2);
-
-	return max_s;
-}
-*/
 
 #endif

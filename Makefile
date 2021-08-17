@@ -42,7 +42,9 @@ depend: $(OBJECTS:.o=.c)
 	gcc -MM $^ > $@
 
 test: $(APP) $(ARC)
-	./ik-test -vec -ivec -fvec -tvec -map -tmap
+	./ik-test -vec -ivec -fvec -tvec -map -tmap -smat -sw \
+		-pipe Makefile -fasta data/777.fa -gff data/777.gff\
+		-pwm data/donor.pwm -mm data/exon.mm -len data/intron.len
 
 all: $(ARC) $(APP)
 	cd dusty && make
