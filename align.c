@@ -230,8 +230,8 @@ ik_hsp ik_sw(const char *s1, const char *s2, ik_smat m) {
 	int i = max_i;
 	int j = max_j;
 	int pos = 0;
-	int min_i;
-	int min_j;
+	int min_i = -1;
+	int min_j = -1;
 	while (sm[i][j] > 0) {
 		if (tm[i][j] == 'd') {
 			a1[pos] = s1[i-1];

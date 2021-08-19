@@ -20,7 +20,7 @@
 // scoring matrices
 
 struct ik_SMAT {
-	char name[32];
+	char name[64];
 	int  gap;
 	int  score[25][25];
 };
