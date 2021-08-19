@@ -1,6 +1,9 @@
 The ik Library
 ==============
 
+This is LEGACY CODE. The project has moved to KorfLab/genomikon.
+
+
 Functions for building simple sequence analysis programs. The philosophy behind
 this library is to keep things simple and native. For example, nucleotide and
 protein sequences do not have their own data types: they are just strings.
