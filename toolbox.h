@@ -129,4 +129,27 @@ void    ik_pipe_free(ik_pipe);
 ik_pipe ik_pipe_open(const char *, const char *);
 void    ik_pipe_close(ik_pipe);
 
+/* generic suffix tree */
+struct ik_xnode {
+	ik_vec children;
+	void  *data;
+	char   c;
+};
+typedef struct ik_xnode * ik_xnode; /* note: all methods private */
+ik_xnode ik_xnode_new(char);
+ik_xnode ik_xnode_search(const ik_xnode, char c);
+
+struct ik_xtree {
+	ik_xnode head;
+	ik_vec   alloc;
+};
+typedef struct ik_xtree * ik_xtree;
+void     ik_xtree_free(ik_xtree);
+ik_xtree ik_xtree_new(void);
+void *   ik_xtree_get(const ik_xtree, const char *);
+int      ik_xtree_check(const ik_xtree, const char *);
+ik_xnode ik_xtree_node(const ik_xtree, const char *);
+void     ik_xtree_set(ik_xtree, const char *, void *);
+ik_tvec	 ik_xtree_keys(const ik_xtree);
+
 #endif

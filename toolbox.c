@@ -474,4 +474,160 @@ ik_pipe ik_pipe_open(const char *name, const char *mode) {
 	return pipe;
 }
 
+// suffix tree
+
+#define MAX_WORD_LENGTH 65536
+
+ik_xnode ik_xnode_new (char c) {
+	ik_xnode xn  = ik_malloc(sizeof(struct ik_xnode));
+	xn->children = ik_vec_new();
+	xn->data     = NULL;
+	xn->c        = c;
+	return xn;
+}
+
+ik_xnode ik_xnode_search (const ik_xnode xn, char c) {
+	int i;
+	ik_xnode child;
+	for (i = 0; i < xn->children->size; i++) {
+		child = xn->children->elem[i];
+		if (child->c == c) return child;
+	}
+	return NULL;
+}
+
+void ik_xtree_free (ik_xtree xt) {
+	int i;
+	ik_xnode node;
+	
+	for (i = 0; i < xt->alloc->size; i++) {
+		node = xt->alloc->elem[i];
+		ik_vec_free(node->children);
+		free(node);
+	}
+	ik_vec_free(xt->alloc);
+	if (xt->head) free(xt->head);
+	free(xt);
+}
+
+ik_xtree ik_xtree_new (void) {
+	ik_xtree xt = ik_malloc(sizeof(struct ik_xtree));
+	
+	xt->head  = ik_xnode_new(0);
+	xt->alloc = ik_vec_new();
+	return xt;
+}
+
+void ik_xtree_set (ik_xtree xt, const char * string, void * value) {
+	int i, len;
+	char c;
+	ik_xnode parent, child;
+	
+	len = strlen(string);
+	if (len < 1) ik_exit("ik_xtree_set with empty string");
+	if (len >= MAX_WORD_LENGTH)
+		ik_exit("ik_xtree word length exceeded (%d)\n", MAX_WORD_LENGTH);
+	
+	parent = xt->head;
+	for (i = 0; i < len; i++) {
+		c = string[i];
+		child = ik_xnode_search(parent, c);
+		if (child == NULL) {
+			child = ik_xnode_new(c);
+			ik_vec_push(parent->children, child);
+			ik_vec_push(xt->alloc, child);
+		}
+		parent = child;
+	}
+	
+	parent->data = value; // last node gets data
+}
+
+void * ik_xtree_get (const ik_xtree xt, const char * string) {
+	int i, len;
+	char c;
+	ik_xnode parent, child;
+	
+	len = strlen(string);
+	if (len < 1) ik_exit("ik_xtree_get with empty string");
+	
+	parent = xt->head;
+	for (i = 0; i < len; i++) {
+		c = string[i];
+		child = ik_xnode_search(parent, c);
+		if (child == NULL) return NULL;
+		parent = child;
+	}
+	return parent->data;
+}
+
+int ik_xtree_check (const ik_xtree xt, const char * string) {
+	int i, len;
+	char c;
+	ik_xnode parent, child;
+	
+	len = strlen(string);
+	if (len < 1) ik_exit("ik_xtree_check with empty string");
+	
+	parent = xt->head;
+	for (i = 0; i < len; i++) {
+		c = string[i];
+		child = ik_xnode_search(parent, c);
+		if (child == NULL) return 0;
+		parent = child;
+	}
+	return 1;
+}
+
+ik_xnode ik_xtree_node (const ik_xtree xt, const char * string) {
+	int i, len;
+	char c;
+	ik_xnode parent, child;
+	
+	len = strlen(string);
+	if (len < 1) ik_exit("ik_xtree_node with empty string");
+	
+	parent = xt->head;
+	for (i = 0; i < len; i++) {
+		c = string[i];
+		child = ik_xnode_search(parent, c);
+		if (child == NULL) return 0;
+		parent = child;
+	}
+	return parent;
+}
+
+static void xtree_add_keys (const ik_xnode parent, ik_tvec keys, char * key,
+	int length) 
+{
+	int i;
+	ik_xnode child;
+	
+	if (parent->data) ik_tvec_push(keys, key);
+	
+	for (i = 0; i < parent->children->size; i++) {
+		child = parent->children->elem[i];
+		key[length] = child->c;
+		key[length+1] = '\0';
+		xtree_add_keys(parent->children->elem[i], keys, key, length+1);
+	}
+}
+		
+
+ik_tvec ik_xtree_keys (const ik_xtree xt) {
+	int		  i;
+	char	  key[MAX_WORD_LENGTH];
+	ik_xnode parent;
+	ik_tvec	 keys = ik_tvec_new();
+	
+	for (i = 0; i < xt->head->children->size; i++) {
+		parent = xt->head->children->elem[i];
+		key[0] = parent->c;
+		key[1] = '\0';
+		xtree_add_keys(parent, keys, key, 1);
+	}
+	
+	return keys;
+}
+
 #endif
